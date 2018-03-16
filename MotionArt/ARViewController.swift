@@ -86,7 +86,7 @@ class ARViewController: UIViewController {
     }
     
     func beginMotionData(){
-        self.motionManager.deviceMotionUpdateInterval = TimeInterval(1)
+        //self.motionManager.deviceMotionUpdateInterval = TimeInterval(1)
         self.motionManager.startDeviceMotionUpdates(to: OperationQueue.current!) { (deviceMotion, error) in
             guard error == nil else{
                 print(error)
@@ -94,17 +94,16 @@ class ARViewController: UIViewController {
             }
             
             self.nodes.forEach({ (node) in
+                
+                let xAccel = abs((deviceMotion?.userAcceleration.x)!) * 10
+                let gravity = abs((deviceMotion?.gravity.y)!)
+                let magnifiedGravity = pow(pow(gravity,2)*10,2)
                 if let geometry = node.geometry as? SCNBox{
-                    let xAccel = abs((deviceMotion?.userAcceleration.x)!) * 10
-                    print(xAccel)
-                    geometry.chamferRadius = CGFloat(xAccel)
+                    let minDimension = min(geometry.height, geometry.width, geometry.length)/2
+                    geometry.chamferRadius = CGFloat(gravity)*minDimension
                 }
             })
-            
-            
         }
-        
-        
     }
 
 }
