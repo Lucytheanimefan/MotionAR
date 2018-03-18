@@ -44,8 +44,10 @@ class ARViewController: UIViewController {
         self.createLight()
         //self.addBox()
         //let node = createBox()
-
-        self.addRing(y: 0)
+        
+        self.addRing(y: 0.5, name:"ring_0")
+        self.addRing(y: 0, name:"ring_1")
+        self.addRing(y: -0.5, name:"ring_2")
         self.beginMotionData()
     }
 
@@ -68,7 +70,6 @@ class ARViewController: UIViewController {
 
     func startSession() {
         configuration = ARWorldTrackingConfiguration()
-        //currenly only planeDetection available is horizontal.
         configuration!.planeDetection = ARWorldTrackingConfiguration.PlaneDetection.horizontal
         sceneView.session.run(configuration!, options: [ARSession.RunOptions.removeExistingAnchors,
                                                         ARSession.RunOptions.resetTracking])
@@ -139,10 +140,13 @@ class ARViewController: UIViewController {
         addNode(node: boxNode)
     }
     
-    func createBox()->SCNNode{
-        let box = SCNBox(width: 0.1, height: 0.1, length: 0.1, chamferRadius: 0)
+    func createBox(name:String? = nil)->SCNNode{
+        let box = SCNBox(width: 0.2, height: 0.2, length: 0.2, chamferRadius: 0)
         let boxNode = SCNNode(geometry: box)
         boxNode.position = SCNVector3(0, 0, -0.2)
+        if let name = name{
+            boxNode.name = name
+        }
         return boxNode
     }
     
@@ -152,14 +156,14 @@ class ARViewController: UIViewController {
         return node
     }
     
-    func addRing(nodes:[SCNNode]?=nil, x:Float?=nil, y:Float?=nil, z:Float?=nil){
+    func addRing(nodes:[SCNNode]? = nil, x:Float? = nil, y:Float? = nil, z:Float? = nil, name:String? = nil){
         var myNodes = [SCNNode]()
         if let nodes = nodes{
             myNodes = nodes
         }
         else{
             for _ in 0 ..< 32{
-                myNodes.append(createBox())
+                myNodes.append(createBox(name: name))
             }
         }
     
@@ -199,22 +203,51 @@ class ARViewController: UIViewController {
             }
             
             let (xAccel, yAccel, zAccel) = (deviceMotion?.normalizedAcceleration())!
+            
+            let (roll, pitch, yaw) = (deviceMotion?.rollPitchYaw())!
 
             #if DEBUG
-            print("Acceleration: \(xAccel),\(yAccel),\(zAccel)")
+            //print("Acceleration: \(xAccel),\(yAccel),\(zAccel)")
             #endif
             
-            let gravity = abs((deviceMotion?.gravity.y)!)
+            let (xGravity, yGravity, zGravity) = (deviceMotion?.absGravity())!
+            
+             let (xPosGravity, yPosGravity, zPosGravity) = (deviceMotion?.positionGravity())!
             
             self.nodes.forEach({ (node) in
-
                 if let geometry = node.geometry as? SCNBox{
                     let minDimension = min(geometry.height, geometry.width, geometry.length)/2
-                    geometry.chamferRadius = CGFloat(gravity)*minDimension
+                    geometry.chamferRadius = CGFloat(yGravity)*minDimension
                 }
                 
                 let accelColor = UIColor(red: xAccel, green: yAccel, blue: zAccel, alpha: 1)
                 node.geometry?.setColor(color: accelColor)
+                
+                //node.rotation
+                let currentPos = node.position
+                
+                if let ringIndex = node.ringIndex(){
+                    print(ringIndex)
+                    switch ringIndex{
+                    case 0: // top ring
+                        node.rotation = SCNVector4Make(roll, pitch, yaw, xPosGravity)
+                        //node.position = SCNVector3Make(currentPos.x + xPosGravity, currentPos.y, currentPos.z)
+                        return
+                    case 1:
+                        //print("Update z position: \(deviceMotion?.gravity.z)")
+                        node.rotation = SCNVector4Make(roll*10, pitch*10, yaw*10, zPosGravity)
+                        //node.position = SCNVector3Make(currentPos.x, currentPos.y, currentPos.z + zPosGravity)
+                        return
+                    case 2:
+                        node.rotation = SCNVector4Make(roll, pitch, yaw, yPosGravity)
+                        //print("Update y position: \(deviceMotion?.gravity.y)")
+                        //node.position = SCNVector3Make(currentPos.x, currentPos.y + yPosGravity, currentPos.z)
+                        return
+                    default:
+                        node.rotation = SCNVector4Make(0, 0, 0, 0)
+                        print("Not one of the 3 rings")
+                    }
+                }
             })
         }
     }
@@ -236,11 +269,42 @@ extension CMDeviceMotion{
                 CGFloat(abs(self.userAcceleration.y))/1.5,
                 CGFloat(abs(self.userAcceleration.z))/1.5)
     }
+    
+    func absGravity()->(CGFloat, CGFloat, CGFloat){
+        return (CGFloat(abs((self.gravity.x))),
+                CGFloat(abs((self.gravity.y))),
+                CGFloat(abs((self.gravity.z))))
+    }
+    
+    func positionGravity()->(Float, Float, Float){
+        return (Float(self.gravity.x),
+                Float(self.gravity.y),
+                Float(self.gravity.z))
+    }
+    
+    func rotationRate()->(CGFloat, CGFloat, CGFloat){
+        return (CGFloat(self.rotationRate.x),
+                CGFloat(self.rotationRate.y),
+                CGFloat(self.rotationRate.z))
+    }
+    
+    func rollPitchYaw()->(Float, Float, Float){
+        return (Float(self.attitude.roll), Float(self.attitude.pitch), Float(self.attitude.yaw))
+    }
 }
 
 extension ARSCNView{
     func addNode(node:SCNNode){
         self.scene.rootNode.addChildNode(node)
+    }
+}
+
+extension SCNNode{
+    func ringIndex()->Int?{
+        if let name = self.name{
+            return Int(String(describing: name.last!))
+        }
+        return nil
     }
 }
 
