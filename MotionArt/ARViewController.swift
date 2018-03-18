@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import ReplayKit
 import ARKit
 import CoreMotion
 
@@ -27,6 +28,9 @@ class ARViewController: UIViewController {
     var nodes:[SCNNode] = [SCNNode]()
     var light:SCNLight!
     
+    
+    let recorder = RPScreenRecorder.shared()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupSceneView()
@@ -39,7 +43,7 @@ class ARViewController: UIViewController {
         self.startSession()
         self.createLight()
         //self.addBox()
-        let node = createBox()
+        //let node = createBox()
 
         self.addRing(y: 0)
         self.beginMotionData()
@@ -50,6 +54,7 @@ class ARViewController: UIViewController {
 
     }
     
+    // MARK: Scene setup
     func setupSceneView(){
         self.sceneView.scene = SCNScene()
         self.sceneView.delegate = self
@@ -69,6 +74,58 @@ class ARViewController: UIViewController {
                                                         ARSession.RunOptions.resetTracking])
     }
     
+    // MARK: Recording
+    @IBAction func startRecording(_ sender: UIBarButtonItem) {
+        startRecording()
+    }
+    
+    
+    @IBAction func stopRecording(_ sender: UIBarButtonItem) {
+        stopRecording()
+    }
+    
+    func startRecording(){
+        guard recorder.isAvailable else {
+            print("Recording is not available at this time.")
+            return
+        }
+        
+        recorder.startRecording { (error) in
+            guard error == nil else {
+                print("There was an error starting the recording: \(error.debugDescription)")
+                return
+            }
+        }
+    }
+    
+    func stopRecording(){
+        recorder.stopRecording { (preview, error) in
+            guard preview != nil else {
+                print("Preview controller is not available.")
+                return
+            }
+            
+            let alert = UIAlertController(title: "Recording Finished", message: "Would you like to edit or delete your recording?", preferredStyle: .alert)
+            
+            let deleteAction = UIAlertAction(title: "Delete", style: .destructive, handler: { (action: UIAlertAction) in
+                self.recorder.discardRecording(handler: { () -> Void in
+                    print("Recording suffessfully deleted.")
+                })
+            })
+            
+            let editAction = UIAlertAction(title: "Edit", style: .default, handler: { (action: UIAlertAction) -> Void in
+                preview?.previewControllerDelegate = self
+                self.present(preview!, animated: true, completion: nil)
+            })
+            
+            alert.addAction(editAction)
+            alert.addAction(deleteAction)
+            self.present(alert, animated: true, completion: nil)
+            
+        }
+    }
+    
+    //MARK: SceneKit objects
     func createLight(){
         self.light = SCNLight()
         light.type = .omni
@@ -137,7 +194,7 @@ class ARViewController: UIViewController {
         //self.motionManager.deviceMotionUpdateInterval = TimeInterval(1)
         self.motionManager.startDeviceMotionUpdates(to: OperationQueue.current!) { (deviceMotion, error) in
             guard error == nil && deviceMotion != nil else{
-                print(error)
+                print(error.debugDescription)
                 return
             }
             
@@ -193,7 +250,11 @@ extension SCNGeometry{
     }
 }
 
+extension ARViewController:RPPreviewViewControllerDelegate{
+    func previewControllerDidFinish(_ previewController: RPPreviewViewController) {
+        dismiss(animated: true, completion: nil)
+    }
+}
+
 extension ARViewController:ARSCNViewDelegate{
-    
-    
 }
