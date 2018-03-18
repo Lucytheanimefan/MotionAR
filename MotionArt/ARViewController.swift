@@ -136,20 +136,28 @@ class ARViewController: UIViewController {
     func beginMotionData(){
         //self.motionManager.deviceMotionUpdateInterval = TimeInterval(1)
         self.motionManager.startDeviceMotionUpdates(to: OperationQueue.current!) { (deviceMotion, error) in
-            guard error == nil else{
+            guard error == nil && deviceMotion != nil else{
                 print(error)
                 return
             }
             
+            let (xAccel, yAccel, zAccel) = (deviceMotion?.normalizedAcceleration())!
+
+            #if DEBUG
+            print("Acceleration: \(xAccel),\(yAccel),\(zAccel)")
+            #endif
+            
+            let gravity = abs((deviceMotion?.gravity.y)!)
+            
             self.nodes.forEach({ (node) in
-                
-                let xAccel = abs((deviceMotion?.userAcceleration.x)!) * 10
-                let gravity = abs((deviceMotion?.gravity.y)!)
-                let magnifiedGravity = pow(pow(gravity,2)*10,2)
+
                 if let geometry = node.geometry as? SCNBox{
                     let minDimension = min(geometry.height, geometry.width, geometry.length)/2
                     geometry.chamferRadius = CGFloat(gravity)*minDimension
                 }
+                
+                let accelColor = UIColor(red: xAccel, green: yAccel, blue: zAccel, alpha: 1)
+                node.geometry?.setColor(color: accelColor)
             })
         }
     }
@@ -162,9 +170,26 @@ extension ARViewController: SCNPhysicsContactDelegate{
     }
 }
 
+extension CMDeviceMotion{
+    
+    // accelerometer is in units of g-force (g = 9.8 m/s/s)
+    // Let's assume the max acceleration of the human is 1.5g <- normalize to this
+    func normalizedAcceleration()->(CGFloat, CGFloat, CGFloat){
+        return (CGFloat(abs(self.userAcceleration.x))/1.5,
+                CGFloat(abs(self.userAcceleration.y))/1.5,
+                CGFloat(abs(self.userAcceleration.z))/1.5)
+    }
+}
+
 extension ARSCNView{
     func addNode(node:SCNNode){
         self.scene.rootNode.addChildNode(node)
+    }
+}
+
+extension SCNGeometry{
+    func setColor(color:UIColor){
+        self.firstMaterial?.diffuse.contents = color
     }
 }
 
