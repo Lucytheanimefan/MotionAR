@@ -38,7 +38,10 @@ class ARViewController: UIViewController {
         super.viewWillAppear(animated)
         self.startSession()
         self.createLight()
-        self.addBox()
+        //self.addBox()
+        let node = createBox()
+
+        self.addRing(y: 0)
         self.beginMotionData()
     }
 
@@ -75,14 +78,59 @@ class ARViewController: UIViewController {
     }
     
     func addBox(){
+        let boxNode = createBox()
+        addNode(node: boxNode)
+    }
+    
+    func createBox()->SCNNode{
         let box = SCNBox(width: 0.1, height: 0.1, length: 0.1, chamferRadius: 0)
-        
-        let boxNode = SCNNode()
-        boxNode.geometry = box
+        let boxNode = SCNNode(geometry: box)
         boxNode.position = SCNVector3(0, 0, -0.2)
-        
-        self.nodes.append(boxNode)
-        self.sceneView.addNode(node: boxNode)
+        return boxNode
+    }
+    
+    func createSphere()->SCNNode{
+        let sphere = SCNSphere(radius: 0.1)
+        let node = SCNNode(geometry: sphere)
+        return node
+    }
+    
+    func addRing(nodes:[SCNNode]?=nil, x:Float?=nil, y:Float?=nil, z:Float?=nil){
+        var myNodes = [SCNNode]()
+        if let nodes = nodes{
+            myNodes = nodes
+        }
+        else{
+            for _ in 0 ..< 32{
+                myNodes.append(createBox())
+            }
+        }
+    
+        let incrementAngle = CGFloat((4*Float.pi) / Float(myNodes.count))
+        print("Increment angle: \(incrementAngle)")
+        for (i, node) in myNodes.enumerated(){
+            let xN = Float(cos(CGFloat(i/2) * incrementAngle))
+            let zN = Float(sin(CGFloat(i/2) * incrementAngle))
+            let yN = zN
+            if let x = x{
+                node.position = SCNVector3Make(x, yN, zN)
+            }
+            else if let y = y{
+                node.position = SCNVector3Make(xN, y, zN)
+            }
+            else if let z = z{
+                node.position = SCNVector3Make(xN, yN, z)
+            }
+            else{
+                node.position = SCNVector3Make(Float(xN), 0, Float(zN))
+            }
+            addNode(node: node)
+        }
+    }
+    
+    func addNode(node:SCNNode){
+        self.nodes.append(node)
+        self.sceneView.addNode(node: node)
     }
     
     func beginMotionData(){
