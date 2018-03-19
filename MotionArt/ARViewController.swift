@@ -18,7 +18,7 @@ import CoreMotion
 //This position is relative to the camera. Positive x is to the right. Negative x is to the left.
 //Positive y is up. Negative y is down. Positive z is backward. Negative z is forward.
 class ARViewController: UIViewController {
-
+    
     @IBOutlet weak var sceneView: ARSCNView!
     var configuration: ARWorldTrackingConfiguration!
     
@@ -48,10 +48,10 @@ class ARViewController: UIViewController {
         self.createRings(numRings: Constants.NUM_RINGS, separationDistance: Constants.RING_SEPARATION)
         self.beginMotionData()
     }
-
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
-
+        
     }
     
     // MARK: Scene setup
@@ -59,13 +59,13 @@ class ARViewController: UIViewController {
         self.sceneView.scene = SCNScene()
         self.sceneView.delegate = self
         #if DEBUG
-        self.sceneView.showsStatistics = true
-        self.sceneView.debugOptions = ARSCNDebugOptions.showWorldOrigin
+            self.sceneView.showsStatistics = true
+            self.sceneView.debugOptions = ARSCNDebugOptions.showWorldOrigin
         #endif
         self.sceneView.scene.physicsWorld.contactDelegate = self
-    
+        
     }
-
+    
     func startSession() {
         configuration = ARWorldTrackingConfiguration()
         configuration!.planeDetection = ARWorldTrackingConfiguration.PlaneDetection.horizontal
@@ -171,12 +171,12 @@ class ARViewController: UIViewController {
                 myNodes.append(createBox(name: name))
             }
         }
-    
-        let incrementAngle = CGFloat((4*Float.pi) / Float(myNodes.count))
+        
+        let incrementAngle = (4*Float.pi) / Float(myNodes.count)
         //print("Increment angle: \(incrementAngle)")
         for (i, node) in myNodes.enumerated(){
-            let xN = Float(cos(CGFloat(i/2) * incrementAngle))
-            let zN = Float(sin(CGFloat(i/2) * incrementAngle))
+            let xN = Float(cos(Float(i/2) * incrementAngle))
+            let zN = Float(sin(Float(i/2) * incrementAngle))
             let yN = zN
             if let x = x{
                 node.position = SCNVector3Make(x, yN, zN)
@@ -209,14 +209,14 @@ class ARViewController: UIViewController {
             let (xAccel, yAccel, zAccel) = (deviceMotion?.normalizedAcceleration())!
             
             let (roll, pitch, yaw) = (deviceMotion?.rollPitchYaw())!
-
+            
             #if DEBUG
-            //print("Acceleration: \(xAccel),\(yAccel),\(zAccel)")
+                //print("Acceleration: \(xAccel),\(yAccel),\(zAccel)")
             #endif
             
             let (xGravity, yGravity, zGravity) = (deviceMotion?.absGravity())!
             
-             let (xPosGravity, yPosGravity, zPosGravity) = (deviceMotion?.positionGravity())!
+            let (xPosGravity, yPosGravity, zPosGravity) = (deviceMotion?.positionGravity())!
             
             self.nodes.forEach({ (node) in
                 if let geometry = node.geometry as? SCNBox{
@@ -232,35 +232,15 @@ class ARViewController: UIViewController {
                     switch ringIndex{
                     case 0: // top ring
                         node.rotation = SCNVector4Make(roll, pitch, yaw, xPosGravity)
-                        //return
                     case 1:
-                        //print("Update z position: \(deviceMotion?.gravity.z)")
                         node.rotation = SCNVector4Make(roll*10, pitch*10, yaw*10, zPosGravity)
-                        //return
                     case 2:
                         node.rotation = SCNVector4Make(roll, pitch, yaw, yPosGravity)
-                        //return
                     default:
                         node.rotation = SCNVector4Make(0, 0, 0, 0)
                         print("Not one of the 3 rings")
                     }
                 }
-                
-//                guard let pointOfView = self.sceneView.pointOfView else {
-//                    print("No POV")
-//                    return
-//                }
-//                let transform = pointOfView.transform
-//                let orientation = SCNVector3(-transform.m31, -transform.m32, transform.m33)
-//                let location = SCNVector3(transform.m41, transform.m42, transform.m43)
-//                let currentPositionOfCamera = self.addVector3(lhv:orientation, rhv:location)
-//
-//                if self.withinBounds(position1: node.position, position2: currentPositionOfCamera){
-//                    print("Within bounds!!!!")
-//                    let currentPos = node.position
-//
-//                    node.position = SCNVector3Make(currentPos.x + Constants.INCREMENT, currentPos.y, currentPos.z + Constants.INCREMENT)
-//                }
             })
         }
     }
@@ -278,7 +258,7 @@ class ARViewController: UIViewController {
             abs(position1.y - position2.y) < Constants.BOUNDS &&
             abs(position1.z - position2.z) < Constants.BOUNDS)
     }
-
+    
 }
 
 // MARK: ARViewController Extensions
@@ -298,24 +278,44 @@ extension ARViewController:ARSessionDelegate{
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
         let currentPosition = frame.camera.transform.position()
         //print("Current position: \(currentPosition)")
-        self.nodes.forEach { (node) in
+        
+        for (i, node) in self.nodes.enumerated(){
+        //self.nodes.forEach { (node) in
             let nodePosition = node.position
             
             //let difference = subtractVector3(lhv: currentPosition, rhv: nodePosition)
             //print("Position difference: \(difference)")
+            
+            // Collision detected
             if self.withinBounds(position1: nodePosition, position2: currentPosition){
                 print("--Within bounds!!!!")
                 print("Node position: \(nodePosition)")
                 
+                // Move it out a bit
                 let signValues = nodePosition.signValue()
-                node.position = SCNVector3Make(nodePosition.x + signValues.x * Constants.INCREMENT, nodePosition.y, nodePosition.z + signValues.z * Constants.INCREMENT)
+                //                node.position = SCNVector3Make(nodePosition.x + signValues.x * Constants.INCREMENT, nodePosition.y, nodePosition.z + signValues.z * Constants.INCREMENT)
+                //
+                // Remove the node from scene and array
+                //node.removeFromParentNode()
+                //self.nodes.remove(at: i)
+                
+                // Create collision nodes
+                if let collisionParticleSystem = SCNParticleSystem(named: "Collision", inDirectory: nil){
+                    node.addParticleSystem(collisionParticleSystem)
+                    
+                    let rand = CGFloat(Float(arc4random()) / Float(UINT32_MAX))
+                    let action = SCNAction.move(by: SCNVector3Make(signValues.x * Constants.INCREMENT * Float(rand) , 0, signValues.z * Constants.INCREMENT * Float(rand) ), duration: 1.5)
+                    action.timingMode = .easeInEaseOut
+                    node.runAction(action)
+                }
+                
             }
         }
     }
 }
 
 extension ARViewController:ARSCNViewDelegate{
-
+    
     
 }
 
@@ -375,9 +375,13 @@ extension SCNGeometry{
 }
 
 extension SCNVector3{
-    func signValue()->SCNVector3{
+    func signValue()->SCNVector3 {
         return SCNVector3Make((self.x>0 ? 1:-1), (self.y>0 ? 1:-1), (self.z>0 ? 1:-1))
     }
+    
+//    func incrementedPosition(xIncrementValue:Float=0, yIncrementValue:Float=0, zIncrementValue:Float=0)->SCNVector3 {
+//
+//    }
 }
 
 extension matrix_float4x4 {
