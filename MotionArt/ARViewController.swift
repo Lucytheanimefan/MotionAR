@@ -226,33 +226,55 @@ class ARViewController: UIViewController {
                 let accelColor = UIColor(red: xAccel, green: yAccel, blue: zAccel, alpha: 1)
                 node.geometry?.setColor(color: accelColor)
                 
-                //node.rotation
-                let currentPos = node.position
-                
                 if let ringIndex = node.ringIndex(){
-                    print(ringIndex)
+                    //print(ringIndex)
                     switch ringIndex{
                     case 0: // top ring
                         node.rotation = SCNVector4Make(roll, pitch, yaw, xPosGravity)
-                        //node.position = SCNVector3Make(currentPos.x + xPosGravity, currentPos.y, currentPos.z)
-                        return
+                        //return
                     case 1:
                         //print("Update z position: \(deviceMotion?.gravity.z)")
                         node.rotation = SCNVector4Make(roll*10, pitch*10, yaw*10, zPosGravity)
-                        //node.position = SCNVector3Make(currentPos.x, currentPos.y, currentPos.z + zPosGravity)
-                        return
+                        //return
                     case 2:
                         node.rotation = SCNVector4Make(roll, pitch, yaw, yPosGravity)
-                        //print("Update y position: \(deviceMotion?.gravity.y)")
-                        //node.position = SCNVector3Make(currentPos.x, currentPos.y + yPosGravity, currentPos.z)
-                        return
+                        //return
                     default:
                         node.rotation = SCNVector4Make(0, 0, 0, 0)
                         print("Not one of the 3 rings")
                     }
                 }
+                
+                guard let pointOfView = self.sceneView.pointOfView else {
+                    print("No POV")
+                    return
+                }
+                let transform = pointOfView.transform
+                let orientation = SCNVector3(-transform.m31, -transform.m32, transform.m33)
+                let location = SCNVector3(transform.m41, transform.m42, transform.m43)
+                let currentPositionOfCamera = self.addVector3(lhv:orientation, rhv:location)
+                
+//                print(node.position)
+//                print(currentPositionOfCamera)
+                //print("-----")
+                if self.withinBounds(position1: node.position, position2: currentPositionOfCamera){
+                    print("Within bounds!!!!")
+                    let currentPos = node.position
+                    
+                    node.position = SCNVector3Make(currentPos.x + Constants.INCREMENT, currentPos.y, currentPos.z + Constants.INCREMENT)
+                }
             })
         }
+    }
+    
+    func addVector3(lhv:SCNVector3, rhv:SCNVector3) -> SCNVector3 {
+        return SCNVector3(lhv.x + rhv.x, lhv.y + rhv.y, lhv.z + rhv.z)
+    }
+    
+    func withinBounds(position1:SCNVector3, position2:SCNVector3) -> Bool{
+        return (abs(position1.x - position2.x) < Constants.BOUNDS &&
+            abs(position1.y - position2.y) < Constants.BOUNDS &&
+            abs(position1.z - position2.z) < Constants.BOUNDS)
     }
 
 }
@@ -294,6 +316,8 @@ extension CMDeviceMotion{
     func rollPitchYaw()->(Float, Float, Float){
         return (Float(self.attitude.roll), Float(self.attitude.pitch), Float(self.attitude.yaw))
     }
+    
+    
 }
 
 extension ARSCNView{
@@ -324,4 +348,6 @@ extension ARViewController:RPPreviewViewControllerDelegate{
 }
 
 extension ARViewController:ARSCNViewDelegate{
+
+    
 }
