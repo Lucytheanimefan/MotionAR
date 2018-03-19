@@ -11,4 +11,8 @@ import Foundation
 struct Constants{
     static let BOUNDS:Float = 0.01
     static let INCREMENT:Float = 0.05
+    static let NUM_NODES:Int = 32
+    
+    static let NUM_RINGS:Int = 5
+    static let RING_SEPARATION:Float = 0.4
 }

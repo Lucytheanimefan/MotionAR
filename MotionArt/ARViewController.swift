@@ -45,7 +45,7 @@ class ARViewController: UIViewController {
         //self.addBox()
         //let node = createBox()
         
-        self.createRings(numRings: 5, separationDistance: 0.4)
+        self.createRings(numRings: Constants.NUM_RINGS, separationDistance: Constants.RING_SEPARATION)
         self.beginMotionData()
     }
 
@@ -69,6 +69,7 @@ class ARViewController: UIViewController {
     func startSession() {
         configuration = ARWorldTrackingConfiguration()
         configuration!.planeDetection = ARWorldTrackingConfiguration.PlaneDetection.horizontal
+        sceneView.session.delegate = self
         sceneView.session.run(configuration!, options: [ARSession.RunOptions.removeExistingAnchors,
                                                         ARSession.RunOptions.resetTracking])
     }
@@ -166,7 +167,7 @@ class ARViewController: UIViewController {
             myNodes = nodes
         }
         else{
-            for _ in 0 ..< 32{
+            for _ in 0 ..< Constants.NUM_NODES{
                 myNodes.append(createBox(name: name))
             }
         }
@@ -245,24 +246,21 @@ class ARViewController: UIViewController {
                     }
                 }
                 
-                guard let pointOfView = self.sceneView.pointOfView else {
-                    print("No POV")
-                    return
-                }
-                let transform = pointOfView.transform
-                let orientation = SCNVector3(-transform.m31, -transform.m32, transform.m33)
-                let location = SCNVector3(transform.m41, transform.m42, transform.m43)
-                let currentPositionOfCamera = self.addVector3(lhv:orientation, rhv:location)
-                
-//                print(node.position)
-//                print(currentPositionOfCamera)
-                //print("-----")
-                if self.withinBounds(position1: node.position, position2: currentPositionOfCamera){
-                    print("Within bounds!!!!")
-                    let currentPos = node.position
-                    
-                    node.position = SCNVector3Make(currentPos.x + Constants.INCREMENT, currentPos.y, currentPos.z + Constants.INCREMENT)
-                }
+//                guard let pointOfView = self.sceneView.pointOfView else {
+//                    print("No POV")
+//                    return
+//                }
+//                let transform = pointOfView.transform
+//                let orientation = SCNVector3(-transform.m31, -transform.m32, transform.m33)
+//                let location = SCNVector3(transform.m41, transform.m42, transform.m43)
+//                let currentPositionOfCamera = self.addVector3(lhv:orientation, rhv:location)
+//
+//                if self.withinBounds(position1: node.position, position2: currentPositionOfCamera){
+//                    print("Within bounds!!!!")
+//                    let currentPos = node.position
+//
+//                    node.position = SCNVector3Make(currentPos.x + Constants.INCREMENT, currentPos.y, currentPos.z + Constants.INCREMENT)
+//                }
             })
         }
     }
@@ -279,12 +277,39 @@ class ARViewController: UIViewController {
 
 }
 
+// MARK: ARViewController Extensions
 extension ARViewController: SCNPhysicsContactDelegate{
     func physicsWorld(_ world: SCNPhysicsWorld, didUpdate contact: SCNPhysicsContact) {
         
     }
 }
 
+extension ARViewController:RPPreviewViewControllerDelegate{
+    func previewControllerDidFinish(_ previewController: RPPreviewViewController) {
+        dismiss(animated: true, completion: nil)
+    }
+}
+
+extension ARViewController:ARSessionDelegate{
+    func session(_ session: ARSession, didUpdate frame: ARFrame) {
+        let currentPosition = frame.camera.transform.position()
+        self.nodes.forEach { (node) in
+            if self.withinBounds(position1: node.position, position2: currentPosition){
+                print("Within bounds!!!!")
+                let currentPos = node.position
+                
+                node.position = SCNVector3Make(currentPos.x + Constants.INCREMENT, currentPos.y, currentPos.z + Constants.INCREMENT)
+            }
+        }
+    }
+}
+
+extension ARViewController:ARSCNViewDelegate{
+
+    
+}
+
+// MARK: Extensions
 extension CMDeviceMotion{
     
     // accelerometer is in units of g-force (g = 9.8 m/s/s)
@@ -316,8 +341,6 @@ extension CMDeviceMotion{
     func rollPitchYaw()->(Float, Float, Float){
         return (Float(self.attitude.roll), Float(self.attitude.pitch), Float(self.attitude.yaw))
     }
-    
-    
 }
 
 extension ARSCNView{
@@ -341,13 +364,8 @@ extension SCNGeometry{
     }
 }
 
-extension ARViewController:RPPreviewViewControllerDelegate{
-    func previewControllerDidFinish(_ previewController: RPPreviewViewController) {
-        dismiss(animated: true, completion: nil)
+extension matrix_float4x4 {
+    func position() -> SCNVector3 {
+        return SCNVector3(columns.3.x, columns.3.y, columns.3.z)
     }
-}
-
-extension ARViewController:ARSCNViewDelegate{
-
-    
 }
