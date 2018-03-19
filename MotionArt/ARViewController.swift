@@ -173,7 +173,7 @@ class ARViewController: UIViewController {
         }
     
         let incrementAngle = CGFloat((4*Float.pi) / Float(myNodes.count))
-        print("Increment angle: \(incrementAngle)")
+        //print("Increment angle: \(incrementAngle)")
         for (i, node) in myNodes.enumerated(){
             let xN = Float(cos(CGFloat(i/2) * incrementAngle))
             let zN = Float(sin(CGFloat(i/2) * incrementAngle))
@@ -269,6 +269,10 @@ class ARViewController: UIViewController {
         return SCNVector3(lhv.x + rhv.x, lhv.y + rhv.y, lhv.z + rhv.z)
     }
     
+    func subtractVector3(lhv:SCNVector3, rhv:SCNVector3) -> SCNVector3 {
+        return SCNVector3(lhv.x - rhv.x, lhv.y - rhv.y, lhv.z - rhv.z)
+    }
+    
     func withinBounds(position1:SCNVector3, position2:SCNVector3) -> Bool{
         return (abs(position1.x - position2.x) < Constants.BOUNDS &&
             abs(position1.y - position2.y) < Constants.BOUNDS &&
@@ -293,12 +297,18 @@ extension ARViewController:RPPreviewViewControllerDelegate{
 extension ARViewController:ARSessionDelegate{
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
         let currentPosition = frame.camera.transform.position()
+        //print("Current position: \(currentPosition)")
         self.nodes.forEach { (node) in
-            if self.withinBounds(position1: node.position, position2: currentPosition){
-                print("Within bounds!!!!")
-                let currentPos = node.position
+            let nodePosition = node.position
+            
+            //let difference = subtractVector3(lhv: currentPosition, rhv: nodePosition)
+            //print("Position difference: \(difference)")
+            if self.withinBounds(position1: nodePosition, position2: currentPosition){
+                print("--Within bounds!!!!")
+                print("Node position: \(nodePosition)")
                 
-                node.position = SCNVector3Make(currentPos.x + Constants.INCREMENT, currentPos.y, currentPos.z + Constants.INCREMENT)
+                let signValues = nodePosition.signValue()
+                node.position = SCNVector3Make(nodePosition.x + signValues.x * Constants.INCREMENT, nodePosition.y, nodePosition.z + signValues.z * Constants.INCREMENT)
             }
         }
     }
@@ -361,6 +371,12 @@ extension SCNNode{
 extension SCNGeometry{
     func setColor(color:UIColor){
         self.firstMaterial?.diffuse.contents = color
+    }
+}
+
+extension SCNVector3{
+    func signValue()->SCNVector3{
+        return SCNVector3Make((self.x>0 ? 1:-1), (self.y>0 ? 1:-1), (self.z>0 ? 1:-1))
     }
 }
 

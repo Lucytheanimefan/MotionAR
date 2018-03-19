@@ -9,7 +9,7 @@
 import Foundation
 
 struct Constants{
-    static let BOUNDS:Float = 0.01
+    static let BOUNDS:Float = 0.1
     static let INCREMENT:Float = 0.05
     static let NUM_NODES:Int = 32
     
