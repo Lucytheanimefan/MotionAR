@@ -45,9 +45,7 @@ class ARViewController: UIViewController {
         //self.addBox()
         //let node = createBox()
         
-        self.addRing(y: 0.5, name:"ring_0")
-        self.addRing(y: 0, name:"ring_1")
-        self.addRing(y: -0.5, name:"ring_2")
+        self.createRings(numRings: 5, separationDistance: 0.4)
         self.beginMotionData()
     }
 
@@ -156,6 +154,12 @@ class ARViewController: UIViewController {
         return node
     }
     
+    func createRings(numRings:Int, separationDistance:Float){
+        for i in -numRings/2 ..< numRings/2{
+            addRing(y: Float(i)*separationDistance, name:"ring_\(i)")
+        }
+    }
+    
     func addRing(nodes:[SCNNode]? = nil, x:Float? = nil, y:Float? = nil, z:Float? = nil, name:String? = nil){
         var myNodes = [SCNNode]()
         if let nodes = nodes{
@@ -195,7 +199,6 @@ class ARViewController: UIViewController {
     }
     
     func beginMotionData(){
-        //self.motionManager.deviceMotionUpdateInterval = TimeInterval(1)
         self.motionManager.startDeviceMotionUpdates(to: OperationQueue.current!) { (deviceMotion, error) in
             guard error == nil && deviceMotion != nil else{
                 print(error.debugDescription)
