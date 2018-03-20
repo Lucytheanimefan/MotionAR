@@ -175,8 +175,8 @@ class ARViewController: UIViewController {
         let incrementAngle = (4*Float.pi) / Float(myNodes.count)
         //print("Increment angle: \(incrementAngle)")
         for (i, node) in myNodes.enumerated(){
-            let xN = Float(cos(Float(i/2) * incrementAngle))
-            let zN = Float(sin(Float(i/2) * incrementAngle))
+            let xN = Float(cos(Float(i/2) * incrementAngle))/3
+            let zN = Float(sin(Float(i/2) * incrementAngle))/3
             let yN = zN
             if let x = x{
                 node.position = SCNVector3Make(x, yN, zN)
@@ -259,13 +259,20 @@ class ARViewController: UIViewController {
             abs(position1.z - position2.z) < Constants.BOUNDS)
     }
     
+    func cleanScene() {
+        for (i, node) in self.nodes.enumerated() {
+            if node.presentation.position.y < -1*(Float(Constants.NUM_RINGS/2) * Constants.RING_SEPARATION) {
+                print("Remove a node")
+                node.removeFromParentNode()
+                self.nodes.remove(at: i)
+            }
+        }
+    }
+    
 }
 
 // MARK: ARViewController Extensions
 extension ARViewController: SCNPhysicsContactDelegate{
-    func physicsWorld(_ world: SCNPhysicsWorld, didUpdate contact: SCNPhysicsContact) {
-        
-    }
 }
 
 extension ARViewController:RPPreviewViewControllerDelegate{
@@ -289,15 +296,10 @@ extension ARViewController:ARSessionDelegate{
             // Collision detected
             if self.withinBounds(position1: nodePosition, position2: currentPosition){
                 print("--Within bounds!!!!")
-                print("Node position: \(nodePosition)")
+                //print("Node position: \(nodePosition)")
                 
                 // Move it out a bit
                 let signValues = nodePosition.signValue()
-                //                node.position = SCNVector3Make(nodePosition.x + signValues.x * Constants.INCREMENT, nodePosition.y, nodePosition.z + signValues.z * Constants.INCREMENT)
-                //
-                // Remove the node from scene and array
-                //node.removeFromParentNode()
-                //self.nodes.remove(at: i)
                 
                 // Create collision nodes
                 if let collisionParticleSystem = SCNParticleSystem(named: "Collision", inDirectory: nil){
@@ -306,7 +308,11 @@ extension ARViewController:ARSessionDelegate{
                     let rand = CGFloat(Float(arc4random()) / Float(UINT32_MAX))
                     let action = SCNAction.move(by: SCNVector3Make(signValues.x * Constants.INCREMENT * Float(rand) , 0, signValues.z * Constants.INCREMENT * Float(rand) ), duration: 1.5)
                     action.timingMode = .easeInEaseOut
-                    node.runAction(action)
+    
+                    node.runAction(action, completionHandler: {
+                        node.physicsBody = SCNPhysicsBody(type: .dynamic, shape: nil)
+                        
+                    })
                 }
                 
             }
@@ -315,7 +321,9 @@ extension ARViewController:ARSessionDelegate{
 }
 
 extension ARViewController:ARSCNViewDelegate{
-    
+    func renderer(_ renderer: SCNSceneRenderer, updateAtTime time: TimeInterval) {
+        cleanScene()
+    }
     
 }
 
