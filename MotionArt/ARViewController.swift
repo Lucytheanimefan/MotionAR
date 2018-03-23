@@ -163,7 +163,7 @@ class ARViewController: UIViewController {
         }
     }
     
-    func addRing(nodes:[SCNNode]? = nil, x:Float? = nil, y:Float? = nil, z:Float? = nil, name:String? = nil){
+    func addRing(nodes:[SCNNode]? = nil, radius:Float = 1, x:Float? = nil, y:Float? = nil, z:Float? = nil, name:String? = nil){
         var myNodes = [SCNNode]()
         if let nodes = nodes{
             myNodes = nodes
@@ -177,8 +177,8 @@ class ARViewController: UIViewController {
         let incrementAngle = (4*Float.pi) / Float(myNodes.count)
         //print("Increment angle: \(incrementAngle)")
         for (i, node) in myNodes.enumerated(){
-            let xN = Float(cos(Float(i/2) * incrementAngle))/3 //TODO: change radius
-            let zN = Float(sin(Float(i/2) * incrementAngle))/3
+            let xN = Float(cos(Float(i/2) * incrementAngle)) * radius //TODO: change radius
+            let zN = Float(sin(Float(i/2) * incrementAngle)) * radius
             let yN = zN
             if let x = x{
                 node.position = SCNVector3Make(x, yN, zN)
