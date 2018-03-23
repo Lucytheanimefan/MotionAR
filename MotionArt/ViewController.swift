@@ -9,6 +9,9 @@
 import UIKit
 
 class ViewController: UIViewController {
+    
+    // "anime" or "motion"
+    var option:String! = "motion"
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -20,6 +23,16 @@ class ViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
 
-
+    @IBAction func toARView(_ sender: UIButton) {
+        self.option = sender.restorationIdentifier
+        self.performSegue(withIdentifier: "toARView", sender: self)
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if let vc = segue.destination as? ARViewController{
+            vc.option = self.option
+        }
+    }
+    
 }
 

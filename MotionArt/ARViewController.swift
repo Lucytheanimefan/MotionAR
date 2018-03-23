@@ -28,8 +28,9 @@ class ARViewController: UIViewController {
     var nodes:[SCNNode] = [SCNNode]()
     var light:SCNLight!
     
-    
     let recorder = RPScreenRecorder.shared()
+    
+    var option:String!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -42,8 +43,6 @@ class ARViewController: UIViewController {
         super.viewWillAppear(animated)
         self.startSession()
         self.createLight()
-        //self.addBox()
-        //let node = createBox()
         
         self.createRings(numRings: Constants.NUM_RINGS, separationDistance: Constants.RING_SEPARATION)
         self.beginMotionData()
@@ -141,6 +140,9 @@ class ARViewController: UIViewController {
     
     func createBox(name:String? = nil)->SCNNode{
         let box = SCNBox(width: 0.2, height: 0.2, length: 0.2, chamferRadius: 0)
+        if (option == "anime"){
+            box.setImage(image: #imageLiteral(resourceName: "penguinCucumber"))
+        }
         let boxNode = SCNNode(geometry: box)
         boxNode.position = SCNVector3(0, 0, -0.2)
         if let name = name{
@@ -175,7 +177,7 @@ class ARViewController: UIViewController {
         let incrementAngle = (4*Float.pi) / Float(myNodes.count)
         //print("Increment angle: \(incrementAngle)")
         for (i, node) in myNodes.enumerated(){
-            let xN = Float(cos(Float(i/2) * incrementAngle))/3
+            let xN = Float(cos(Float(i/2) * incrementAngle))/3 //TODO: change radius
             let zN = Float(sin(Float(i/2) * incrementAngle))/3
             let yN = zN
             if let x = x{
@@ -224,9 +226,10 @@ class ARViewController: UIViewController {
                     geometry.chamferRadius = CGFloat(yGravity)*minDimension
                 }
                 
-                let accelColor = UIColor(red: xAccel, green: yAccel, blue: zAccel, alpha: 1)
-                node.geometry?.setColor(color: accelColor)
-                
+                if (self.option == "motion"){
+                    let accelColor = UIColor(red: xAccel, green: yAccel, blue: zAccel, alpha: 1)
+                    node.geometry?.setColor(color: accelColor)
+                }
                 if let ringIndex = node.ringIndex(){
                     //print(ringIndex)
                     switch ringIndex{
@@ -379,6 +382,10 @@ extension SCNNode{
 extension SCNGeometry{
     func setColor(color:UIColor){
         self.firstMaterial?.diffuse.contents = color
+    }
+    
+    func setImage(image:UIImage){
+        self.firstMaterial?.diffuse.contents = image
     }
 }
 
