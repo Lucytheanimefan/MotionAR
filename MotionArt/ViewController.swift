@@ -7,12 +7,16 @@
 //
 
 import UIKit
-
+import MediaPlayer
 class ViewController: UIViewController {
     
     // "anime" or "motion"
     var option:String! = "motion"
-
+    
+    // Choosing existing music from itunes
+    var mediaPicker: MPMediaPickerController?
+    var musicAssetURL:URL?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
@@ -31,8 +35,40 @@ class ViewController: UIViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let vc = segue.destination as? ARViewController{
             vc.option = self.option
+            vc.musicAssetURL = self.musicAssetURL
         }
     }
     
+    @IBAction func displayMediaPicker(_ sender: UIButton) {
+        self.displayMediaPicker()
+    }
+    
+    func displayMediaPicker(){
+        mediaPicker = MPMediaPickerController(mediaTypes: .anyAudio)
+        
+        if let picker = mediaPicker{
+            picker.delegate = self
+            view.addSubview(picker.view)
+            self.present(picker, animated: true, completion: nil)
+        }
+        else
+        {
+            print("Error: Couldn't instantiate media picker")
+        }
+    }
 }
 
+
+extension ViewController: MPMediaPickerControllerDelegate{
+    func mediaPicker(_ mediaPicker: MPMediaPickerController, didPickMediaItems mediaItemCollection: MPMediaItemCollection) {
+        // Get the file
+        let musicItem = mediaItemCollection.items[0]
+        if let assetURL = musicItem.value(forKey: MPMediaItemPropertyAssetURL) as? URL
+        {
+            self.musicAssetURL = assetURL
+        }
+        
+        
+        mediaPicker.dismiss(animated: true, completion: nil)
+    }
+}

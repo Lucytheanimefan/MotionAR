@@ -60,16 +60,27 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" restorationIdentifier="anime" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aFQ-1T-VU1">
-                                <rect key="frame" x="143" y="288" width="88" height="30"/>
+                                <rect key="frame" x="154" y="127" width="88" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="Anime Game"/>
+                                <connections>
+                                    <action selector="toARView:" destination="Apn-FJ-QQl" eventType="touchUpInside" id="2xa-Xz-EIN"/>
+                                </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" restorationIdentifier="motion" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9om-QP-dwg">
-                                <rect key="frame" x="154" y="343" width="67" height="30"/>
+                                <rect key="frame" x="165" y="192" width="67" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="MotionAR"/>
                                 <connections>
                                     <action selector="toARView:" destination="Apn-FJ-QQl" eventType="touchUpInside" id="lS8-aN-Lil"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="T6d-it-4lb">
+                                <rect key="frame" x="107" y="281" width="182" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Choose music from iTunes"/>
+                                <connections>
+                                    <action selector="displayMediaPicker:" destination="Apn-FJ-QQl" eventType="touchUpInside" id="S2j-JD-uve"/>
                                 </connections>
                             </button>
                         </subviews>

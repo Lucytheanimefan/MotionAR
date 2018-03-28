@@ -30,13 +30,20 @@ class ARViewController: UIViewController {
     
     let recorder = RPScreenRecorder.shared()
     
+    var deviceMotion:CMDeviceMotion?
+    
     var option:String!
+    var musicAssetURL:URL?
+    
+    let audioTransformer = AudioTransformer.shared
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setupSceneView()
         self.activityManager = CMMotionActivityManager()
         self.motionManager = CMMotionManager()
+        audioTransformer.delegate = self
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -51,6 +58,10 @@ class ARViewController: UIViewController {
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
     }
     
     // MARK: Scene setup
@@ -75,6 +86,9 @@ class ARViewController: UIViewController {
     
     // MARK: Recording
     @IBAction func startRecording(_ sender: UIBarButtonItem) {
+        if let url = self.musicAssetURL{
+            audioTransformer.begin(file: url)
+        }
         startRecording()
     }
     
@@ -207,6 +221,7 @@ class ARViewController: UIViewController {
                 print(error.debugDescription)
                 return
             }
+            self.deviceMotion = deviceMotion
             
             let (xAccel, yAccel, zAccel) = (deviceMotion?.normalizedAcceleration())!
             
@@ -290,11 +305,7 @@ extension ARViewController:ARSessionDelegate{
         //print("Current position: \(currentPosition)")
         
         for (i, node) in self.nodes.enumerated(){
-        //self.nodes.forEach { (node) in
             let nodePosition = node.position
-            
-            //let difference = subtractVector3(lhv: currentPosition, rhv: nodePosition)
-            //print("Position difference: \(difference)")
             
             // Collision detected
             if self.withinBounds(position1: nodePosition, position2: currentPosition){
@@ -309,12 +320,11 @@ extension ARViewController:ARSessionDelegate{
                     node.addParticleSystem(collisionParticleSystem)
                     
                     let rand = CGFloat(Float(arc4random()) / Float(UINT32_MAX))
-                    let action = SCNAction.move(by: SCNVector3Make(signValues.x * Constants.INCREMENT * Float(rand) , 0, signValues.z * Constants.INCREMENT * Float(rand) ), duration: 1.5)
+                    let action = SCNAction.move(by: SCNVector3Make(signValues.x * Constants.INCREMENT * Float(rand) , 0, signValues.z * Constants.INCREMENT * Float(rand) ), duration: 1.5 )
                     action.timingMode = .easeInEaseOut
-    
+                    
                     node.runAction(action, completionHandler: {
                         node.physicsBody = SCNPhysicsBody(type: .dynamic, shape: nil)
-                        
                     })
                 }
                 
@@ -393,14 +403,37 @@ extension SCNVector3{
     func signValue()->SCNVector3 {
         return SCNVector3Make((self.x>0 ? 1:-1), (self.y>0 ? 1:-1), (self.z>0 ? 1:-1))
     }
-    
-//    func incrementedPosition(xIncrementValue:Float=0, yIncrementValue:Float=0, zIncrementValue:Float=0)->SCNVector3 {
-//
-//    }
 }
 
 extension matrix_float4x4 {
     func position() -> SCNVector3 {
         return SCNVector3(columns.3.x, columns.3.y, columns.3.z)
     }
+}
+
+extension ARViewController: AudioTransformerDelegate{
+    func onPlay() {
+        
+    }
+    
+    func dealWithFFTMagnitudes(magnitudes: [Float]) {
+        for (index, magnitude) in magnitudes.enumerated()
+        {
+            updateNodeScalesWithFFT(index: index, magnitude: magnitude)
+        }
+    }
+    
+    func updateNodeScalesWithFFT(index:Int, magnitude:Float){
+        guard index < nodes.count else {
+            print("Index \(index) is greater than # of nodes \(nodes.count)")
+            return
+        }
+        let m = magnitude*10
+        
+        let s = SCNVector3Make(m, m, m)
+        print("Node: \(index), Scale: \(s)")
+        nodes[index].scale = s
+    }
+    
+    
 }
