@@ -71,4 +71,8 @@ extension ViewController: MPMediaPickerControllerDelegate{
         
         mediaPicker.dismiss(animated: true, completion: nil)
     }
+    
+    func mediaPickerDidCancel(_ mediaPicker: MPMediaPickerController) {
+        self.dismiss(animated: true, completion: nil)
+    }
 }

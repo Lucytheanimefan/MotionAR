@@ -26,6 +26,9 @@ class ARViewController: UIViewController {
     var motionManager:CMMotionManager!
     
     var nodes:[SCNNode] = [SCNNode]()
+    
+    // Array of all the nodes per ring: index 0 is ring 0
+    var ringNodes = [[SCNNode]]()
     var light:SCNLight!
     
     let recorder = RPScreenRecorder.shared()
@@ -35,11 +38,12 @@ class ARViewController: UIViewController {
     var option:String!
     var musicAssetURL:URL?
     
-    let audioTransformer = AudioTransformer.shared
+    var audioTransformer:AudioTransformer!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setupSceneView()
+        self.audioTransformer = AudioTransformer()
         self.activityManager = CMMotionActivityManager()
         self.motionManager = CMMotionManager()
         audioTransformer.delegate = self
@@ -62,6 +66,13 @@ class ARViewController: UIViewController {
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
+    }
+    
+    @IBAction func cancel(_ sender: UIBarButtonItem) {
+        self.dismiss(animated: true) {
+            self.musicAssetURL = nil
+            self.audioTransformer.cancel()
+        }
     }
     
     // MARK: Scene setup
@@ -171,13 +182,15 @@ class ARViewController: UIViewController {
         return node
     }
     
+    // MARK: Create Rings
     func createRings(numRings:Int, separationDistance:Float){
         for i in -numRings/2 ..< numRings/2{
-            addRing(y: Float(i)*separationDistance, name:"ring_\(i)")
+            let nodes = addRing(y: Float(i)*separationDistance, name:"ring_\(i)")
+            self.ringNodes.append(nodes)
         }
     }
     
-    func addRing(nodes:[SCNNode]? = nil, radius:Float = 1, x:Float? = nil, y:Float? = nil, z:Float? = nil, name:String? = nil){
+    func addRing(nodes:[SCNNode]? = nil, radius:Float = 1, x:Float? = nil, y:Float? = nil, z:Float? = nil, name:String? = nil) -> [SCNNode]{
         var myNodes = [SCNNode]()
         if let nodes = nodes{
             myNodes = nodes
@@ -189,7 +202,7 @@ class ARViewController: UIViewController {
         }
         
         let incrementAngle = (4*Float.pi) / Float(myNodes.count)
-        //print("Increment angle: \(incrementAngle)")
+        var returnNodes = [SCNNode]()
         for (i, node) in myNodes.enumerated(){
             let xN = Float(cos(Float(i/2) * incrementAngle)) * radius //TODO: change radius
             let zN = Float(sin(Float(i/2) * incrementAngle)) * radius
@@ -206,8 +219,10 @@ class ARViewController: UIViewController {
             else{
                 node.position = SCNVector3Make(Float(xN), 0, Float(zN))
             }
+            returnNodes.append(node)
             addNode(node: node)
         }
+        return returnNodes
     }
     
     func addNode(node:SCNNode){
@@ -403,6 +418,10 @@ extension SCNVector3{
     func signValue()->SCNVector3 {
         return SCNVector3Make((self.x>0 ? 1:-1), (self.y>0 ? 1:-1), (self.z>0 ? 1:-1))
     }
+    
+    func description()->String{
+        return "(" + String(self.x) + ", " + String(self.y) + ", " + String(self.z) + ")"
+    }
 }
 
 extension matrix_float4x4 {
@@ -417,21 +436,25 @@ extension ARViewController: AudioTransformerDelegate{
     }
     
     func dealWithFFTMagnitudes(magnitudes: [Float]) {
+        //let max = magnitudes.max()
         for (index, magnitude) in magnitudes.enumerated()
         {
-            updateNodeScalesWithFFT(index: index, magnitude: magnitude)
+            let middleIndex = ringNodes.count/2
+            updateNodeScalesWithFFT(index: index, magnitude: magnitude, nodes: ringNodes[middleIndex])
         }
     }
     
-    func updateNodeScalesWithFFT(index:Int, magnitude:Float){
+    func updateNodeScalesWithFFT(index:Int, magnitude:Float, nodes:[SCNNode]){
         guard index < nodes.count else {
             print("Index \(index) is greater than # of nodes \(nodes.count)")
             return
         }
-        let m = magnitude*10
+        let m = magnitude
         
         let s = SCNVector3Make(m, m, m)
-        print("Node: \(index), Scale: \(s)")
+        #if DEBUG
+            print("Node: \(index), Scale: \(s.description())")
+        #endif
         nodes[index].scale = s
     }
     

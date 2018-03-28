@@ -28,8 +28,8 @@ class AudioTransformer: NSObject {
     
     func begin(file:URL){
         os_log("%@: Begin", self.description)
+        audioEngine.inputNode.removeTap(onBus: 0)
         audioEngine.attach(audioNode)
-        
         
         guard let audioFile = try? AVAudioFile(forReading: file) else {
             os_log("%@: Invalid file: %@", self.description, (file.absoluteString))
