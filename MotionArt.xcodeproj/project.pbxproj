@@ -9,6 +9,10 @@
 /* Begin PBXBuildFile section */
 		7C6B112B206BF49300D7E590 /* AudioTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C6B112A206BF49300D7E590 /* AudioTransformer.swift */; };
 		7C6B112D206C616800D7E590 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C6B112C206C616700D7E590 /* Extensions.swift */; };
+		7C6B112F206D56CA00D7E590 /* ARVisualization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C6B112E206D56CA00D7E590 /* ARVisualization.swift */; };
+		7C6B1131206D5C9C00D7E590 /* ARSettingVizTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C6B1130206D5C9B00D7E590 /* ARSettingVizTableViewCell.swift */; };
+		7C6B1133206D62F400D7E590 /* NewVisualizationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C6B1132206D62F300D7E590 /* NewVisualizationViewController.swift */; };
+		7C6B1135206D6A4400D7E590 /* ARVisualizationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C6B1134206D6A4400D7E590 /* ARVisualizationManager.swift */; };
 		7C7173D8205C236B004830C0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C7173D7205C236B004830C0 /* AppDelegate.swift */; };
 		7C7173DA205C236B004830C0 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C7173D9205C236B004830C0 /* ViewController.swift */; };
 		7C7173DD205C236B004830C0 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7C7173DB205C236B004830C0 /* Main.storyboard */; };
@@ -34,6 +38,10 @@
 /* Begin PBXFileReference section */
 		7C6B112A206BF49300D7E590 /* AudioTransformer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioTransformer.swift; sourceTree = "<group>"; };
 		7C6B112C206C616700D7E590 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
+		7C6B112E206D56CA00D7E590 /* ARVisualization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARVisualization.swift; sourceTree = "<group>"; };
+		7C6B1130206D5C9B00D7E590 /* ARSettingVizTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARSettingVizTableViewCell.swift; sourceTree = "<group>"; };
+		7C6B1132206D62F300D7E590 /* NewVisualizationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewVisualizationViewController.swift; sourceTree = "<group>"; };
+		7C6B1134206D6A4400D7E590 /* ARVisualizationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARVisualizationManager.swift; sourceTree = "<group>"; };
 		7C7173D4205C236B004830C0 /* MotionArt.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MotionArt.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7C7173D7205C236B004830C0 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		7C7173D9205C236B004830C0 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -101,6 +109,10 @@
 				7C7173FF20605308004830C0 /* Collision.scnp */,
 				7C6B112A206BF49300D7E590 /* AudioTransformer.swift */,
 				7C6B112C206C616700D7E590 /* Extensions.swift */,
+				7C6B112E206D56CA00D7E590 /* ARVisualization.swift */,
+				7C6B1130206D5C9B00D7E590 /* ARSettingVizTableViewCell.swift */,
+				7C6B1132206D62F300D7E590 /* NewVisualizationViewController.swift */,
+				7C6B1134206D6A4400D7E590 /* ARVisualizationManager.swift */,
 			);
 			path = MotionArt;
 			sourceTree = "<group>";
@@ -222,9 +234,13 @@
 				7C7173F8205C23CE004830C0 /* ARViewController.swift in Sources */,
 				7C6B112D206C616800D7E590 /* Extensions.swift in Sources */,
 				7C7173DA205C236B004830C0 /* ViewController.swift in Sources */,
+				7C6B112F206D56CA00D7E590 /* ARVisualization.swift in Sources */,
 				7C7173D8205C236B004830C0 /* AppDelegate.swift in Sources */,
 				7C7173FA205FFDDE004830C0 /* Constants.swift in Sources */,
+				7C6B1133206D62F400D7E590 /* NewVisualizationViewController.swift in Sources */,
+				7C6B1135206D6A4400D7E590 /* ARVisualizationManager.swift in Sources */,
 				7C6B112B206BF49300D7E590 /* AudioTransformer.swift in Sources */,
+				7C6B1131206D5C9C00D7E590 /* ARSettingVizTableViewCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

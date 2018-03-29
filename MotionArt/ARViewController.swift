@@ -35,6 +35,8 @@ class ARViewController: UIViewController {
     
     var deviceMotion:CMDeviceMotion?
     
+    var ARVizSettings:ARVisualization!
+    
     var option:String!
     var musicAssetURL:URL?
     
@@ -55,7 +57,7 @@ class ARViewController: UIViewController {
         self.startSession()
         self.createLight()
         
-        self.createRings(numRings: Constants.NUM_RINGS, separationDistance: Constants.RING_SEPARATION)
+        self.createRings(numRings: /*Constants.NUM_RINGS*/ARVizSettings.num_rings, separationDistance: /*Constants.RING_SEPARATION*/ARVizSettings.ring_separation)
         self.beginMotionData()
     }
     
@@ -164,8 +166,8 @@ class ARViewController: UIViewController {
     }
     
     func createBox(name:String? = nil)->SCNNode{
-        let box = SCNBox(width: 0.2, height: 0.2, length: 0.2, chamferRadius: 0)
-        if (option == "anime"){
+        let box = SCNBox(width: CGFloat(ARVizSettings.box_dimensions), height: CGFloat(ARVizSettings.box_dimensions), length: CGFloat(ARVizSettings.box_dimensions), chamferRadius: 0)
+        if (ARVizSettings.name.lowercased() == "anime"){
             box.setImage(image: #imageLiteral(resourceName: "penguinCucumber"))
         }
         let boxNode = SCNNode(geometry: box)
@@ -196,7 +198,7 @@ class ARViewController: UIViewController {
             myNodes = nodes
         }
         else{
-            for _ in 0 ..< Constants.NUM_NODES{
+            for _ in 0 ..< ARVizSettings.num_nodes{
                 myNodes.append(createBox(name: name))
             }
         }
@@ -287,14 +289,14 @@ class ARViewController: UIViewController {
     }
     
     func withinBounds(position1:SCNVector3, position2:SCNVector3) -> Bool{
-        return (abs(position1.x - position2.x) < Constants.BOUNDS &&
-            abs(position1.y - position2.y) < Constants.BOUNDS &&
-            abs(position1.z - position2.z) < Constants.BOUNDS)
+        return (abs(position1.x - position2.x) < ARVizSettings.bounds &&
+            abs(position1.y - position2.y) < ARVizSettings.bounds &&
+            abs(position1.z - position2.z) < ARVizSettings.bounds)
     }
     
     func cleanScene() {
         for (i, node) in self.nodes.enumerated() {
-            if node.presentation.position.y < -1*(Float(Constants.NUM_RINGS/2) * Constants.RING_SEPARATION) {
+            if node.presentation.position.y < -1*(Float(ARVizSettings.num_rings/2) * ARVizSettings.ring_separation) {
                 print("Remove a node")
                 node.removeFromParentNode()
                 self.nodes.remove(at: i)
@@ -335,7 +337,7 @@ extension ARViewController:ARSessionDelegate{
                     node.addParticleSystem(collisionParticleSystem)
                     
                     let rand = CGFloat(Float(arc4random()) / Float(UINT32_MAX))
-                    let action = SCNAction.move(by: SCNVector3Make(signValues.x * Constants.INCREMENT * Float(rand) , 0, signValues.z * Constants.INCREMENT * Float(rand) ), duration: 1.5 )
+                    let action = SCNAction.move(by: SCNVector3Make(signValues.x * ARVizSettings.increment * Float(rand) , 0, signValues.z * ARVizSettings.increment * Float(rand) ), duration: 1.5 )
                     action.timingMode = .easeInEaseOut
                     
                     node.runAction(action, completionHandler: {
