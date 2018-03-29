@@ -367,8 +367,11 @@ extension ARViewController: AudioTransformerDelegate{
         //let max = magnitudes.max()
         for (index, magnitude) in magnitudes.enumerated()
         {
-            let middleIndex = ringNodes.count/2
-            updateNodeScalesWithFFT(index: index, magnitude: magnitude, nodes: ringNodes[middleIndex])
+            //let middleIndex = ringNodes.count/2
+            ringNodes.forEach({ (nodes) in
+                updateNodeScalesWithFFT(index: index, magnitude: magnitude, nodes: nodes)
+            })
+            //updateNodeScalesWithFFT(index: index, magnitude: magnitude, nodes: ringNodes[middleIndex])
         }
     }
     
@@ -381,7 +384,7 @@ extension ARViewController: AudioTransformerDelegate{
         
         let s = SCNVector3Make(m, m, m)
         #if DEBUG
-            print("Node: \(index), Scale: \(s.description())")
+            //print("Node: \(index), Scale: \(s.description())")
         #endif
         nodes[index].scale = s
     }
