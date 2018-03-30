@@ -28,8 +28,8 @@ class ARVisualization: NSObject {
         return ["bounds":self.bounds, "increment":self.increment, "num_nodes":self.num_nodes, "frame_count":frame_count, "num_rings":self.num_rings, "ring_separation":self.ring_separation, "box_dimensions":self.box_dimensions, "musicAssetURL":self.musicAssetURL]
     }()
     
-    init() {
-    }
+//    init() {
+//    }
 
     convenience init(name:String) {
         self.init()

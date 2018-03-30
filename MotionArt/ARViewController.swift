@@ -50,10 +50,12 @@ class ARViewController: UIViewController {
         self.motionManager = CMMotionManager()
         audioTransformer.delegate = self
         
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        print(ARVizSettings.settings)
         self.startSession()
         self.createLight()
         
@@ -72,8 +74,10 @@ class ARViewController: UIViewController {
     
     @IBAction func cancel(_ sender: UIBarButtonItem) {
         self.dismiss(animated: true) {
-            self.musicAssetURL = nil
-            self.audioTransformer.cancel()
+            if (self.musicAssetURL != nil){
+                self.musicAssetURL = nil
+                self.audioTransformer.cancel()
+            }
         }
     }
     
@@ -100,6 +104,7 @@ class ARViewController: UIViewController {
     // MARK: Recording
     @IBAction func startRecording(_ sender: UIBarButtonItem) {
         if let url = self.musicAssetURL{
+            print("Music URL: \(url)")
             audioTransformer.begin(file: url)
         }
         startRecording()
