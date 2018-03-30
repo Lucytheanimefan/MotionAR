@@ -22,10 +22,10 @@ class ARVisualization: NSObject {
     var ring_separation:Float = Constants.RING_SEPARATION
     var box_dimensions:Float = Constants.BOX_DIMENSIONS
     
-    var musicAssetURL:URL!
+    var musicAssetURL:URL? = nil
     
     lazy var settings:[String:Any] = {
-        return ["bounds":self.bounds, "increment":self.increment, "num_nodes":self.num_nodes, "frame_count":frame_count, "num_rings":self.num_rings, "ring_separation":self.ring_separation, "box_dimensions":self.box_dimensions, "musicAssetURL":self.musicAssetURL]
+        return ["bounds":self.bounds, "increment":self.increment, "num_nodes":self.num_nodes, "frame_count":frame_count, "num_rings":self.num_rings, "ring_separation":self.ring_separation, "box_dimensions":self.box_dimensions, "musicAssetURL":self.musicAssetURL, "name":self.name]
     }()
     
 //    init() {

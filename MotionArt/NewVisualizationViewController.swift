@@ -28,6 +28,11 @@ class NewVisualizationViewController: UIViewController {
         ringSeparationField.delegate = self
         numRingsField.delegate = self
         
+        boxDimensionsField.text = visualization.box_dimensions.description
+        ringSeparationField.text = visualization.ring_separation.description
+        numRingsField.text = visualization.num_rings.description
+        
+        
         NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillShow(sender:)), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillHide(sender:)), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
@@ -85,9 +90,6 @@ class NewVisualizationViewController: UIViewController {
 
 extension NewVisualizationViewController: UITextFieldDelegate{
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        // allow backspace
-        // allow digit 0 to 9
-        return (string.count > 0) || (Int(string) != nil)
-
+        return CharacterSet(charactersIn: "0123456789").isSuperset(of: CharacterSet(charactersIn: string))
     }
 }

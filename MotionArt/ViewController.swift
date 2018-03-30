@@ -25,6 +25,7 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         ARVisualizationManager.shared.delegate = self
         // Do any additional setup after loading the view, typically from a nib.
+        ARVisualizationManager.shared.recreateVisualizations()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -34,6 +35,10 @@ class ViewController: UIViewController {
             }
             ARVisualizationManager.shared.needsRefresh = false
         }
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        ARVisualizationManager.shared.updateDefaults()
     }
 
     override func didReceiveMemoryWarning() {

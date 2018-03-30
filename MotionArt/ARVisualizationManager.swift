@@ -30,5 +30,43 @@ class ARVisualizationManager: NSObject {
         }
         self.delegate?.onSettingChange()
     }
+    
+    func updateDefaults(){
+        let vizDict = self.visualizations.map { (viz) -> [String:Any] in
+            var dict = viz.settings
+            dict["musicAssetURL"] = (dict["musicAssetURL"] != nil) ? dict["musicAssetURL"]! : ("") as Any
+            print(dict["musicAssetURL"])
+            print(type(of:dict["musicAssetURL"]))
+           
+            return dict
+        }
+        print(vizDict)
+        let encodedData = NSKeyedArchiver.archivedData(withRootObject: vizDict)
+        UserDefaults.standard.set(encodedData, forKey: "ARVisualizations")
+    }
+    
+    func recreateVisualizations(){
+        guard let decoded  = UserDefaults.standard.object(forKey: "ARVisualizations") as? Data else {
+            return
+        }
+        if let vizDict = NSKeyedUnarchiver.unarchiveObject(with: decoded) as? [[String:Any]]{
+            self.visualizations = [ARVisualization]()
+            vizDict.forEach({ (dict) in
+                let viz = ARVisualization(name: dict["name"] as! String)
+                viz.bounds = dict["bounds"] as! Float
+                viz.box_dimensions = dict["box_dimensions"] as! Float
+                viz.frame_count = dict["frame_count"] as! Int
+                viz.increment = dict["increment"] as! Float
+                if let url = dict["musicAssetURL"] as? URL{
+                    viz.musicAssetURL = url
+                }
+                viz.num_nodes = dict["num_nodes"] as! Int
+                viz.num_rings = dict["num_rings"] as! Int
+                viz.ring_separation = dict["ring_separation"] as! Float
+                
+                self.addSetting(setting: viz)
+            })
+        }
+    }
 
 }
