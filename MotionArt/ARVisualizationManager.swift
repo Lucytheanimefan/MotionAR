@@ -16,7 +16,11 @@ class ARVisualizationManager: NSObject {
     
     static let shared = ARVisualizationManager()
     
-    var visualizations:[ARVisualization] = [ARVisualization(name: "Motion"), ARVisualization(name: "Anime")]
+    var visualizations:[ARVisualization] = [ARVisualization(name: "Motion"), ARVisualization(name: "Anime")] {
+        didSet{
+            self.delegate?.onSettingChange()
+        }
+    }
     
     var delegate:ARVisualizationManagerDelegate?
     
@@ -28,12 +32,12 @@ class ARVisualizationManager: NSObject {
         if self.delegate == nil{
             needsRefresh = true
         }
-        self.delegate?.onSettingChange()
+        //self.delegate?.onSettingChange()
     }
     
     func removeSetting(index:Int){
         self.visualizations.remove(at: index)
-        self.delegate?.onSettingChange()
+        //self.delegate?.onSettingChange()
     }
     
     func updateDefaults(){

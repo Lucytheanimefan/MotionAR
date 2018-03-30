@@ -21,15 +21,15 @@ class ViewController: UIViewController {
 
     var selectedARViz:ARVisualization!
     
+    var selectedIndex:Int?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         ARVisualizationManager.shared.delegate = self
-        // Do any additional setup after loading the view, typically from a nib.
-        //ARVisualizationManager.shared.recreateVisualizations()
+        ARVisualizationManager.shared.recreateVisualizations()
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        ARVisualizationManager.shared.recreateVisualizations()
         if ARVisualizationManager.shared.needsRefresh{
             DispatchQueue.main.async {
                 self.tableView.reloadData()
@@ -53,6 +53,13 @@ class ViewController: UIViewController {
             vc.option = self.option
             //vc.musicAssetURL = self.musicAssetURL
             vc.ARVizSettings = self.selectedARViz
+        }
+        
+        if let vc = segue.destination as? NewVisualizationViewController{
+            if let viz = self.selectedARViz, let index = self.selectedIndex{
+                vc.visualization = viz
+                vc.existingCellIndex = index
+            }
         }
     }
     
@@ -126,6 +133,22 @@ extension ViewController: UITableViewDataSource{
         else if (editingStyle == UITableViewCellEditingStyle.insert){
             print("Insert mode")
         }
+    }
+    
+    func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
+        let editAction = UITableViewRowAction(style: .default, title: "Edit") { (action, indexPath) in
+            self.selectedARViz = ARVisualizationManager.shared.visualizations[indexPath.row]
+            self.selectedIndex = indexPath.row
+            self.performSegue(withIdentifier: "addVizSegue", sender: self)
+        }
+        editAction.backgroundColor = .blue
+        
+        let deleteAction = UITableViewRowAction(style: .default, title: "Delete") { (action, indexPath) in
+            ARVisualizationManager.shared.removeSetting(index: indexPath.row)
+        }
+        deleteAction.backgroundColor = .red
+        
+        return [editAction, deleteAction]
     }
     
 }

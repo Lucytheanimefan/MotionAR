@@ -21,6 +21,7 @@ class NewVisualizationViewController: UIViewController {
     @IBOutlet weak var numRingsField: UITextField!
     @IBOutlet weak var selectedMusicLabel: UILabel!
     
+    var existingCellIndex:Int?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -28,6 +29,7 @@ class NewVisualizationViewController: UIViewController {
         ringSeparationField.delegate = self
         numRingsField.delegate = self
         
+        nameField.text = visualization.name
         boxDimensionsField.text = visualization.box_dimensions.description
         ringSeparationField.text = visualization.ring_separation.description
         numRingsField.text = visualization.num_rings.description
@@ -66,7 +68,13 @@ class NewVisualizationViewController: UIViewController {
         if let box = self.boxDimensionsField.text{
             visualization.box_dimensions = Float(box)!
         }
-        ARVisualizationManager.shared.addSetting(setting: visualization)
+        if let index = existingCellIndex{
+            ARVisualizationManager.shared.visualizations[index] = visualization
+        }
+        else
+        {
+            ARVisualizationManager.shared.addSetting(setting: visualization)
+        }
         self.dismiss(animated: true, completion: nil)
     }
     
