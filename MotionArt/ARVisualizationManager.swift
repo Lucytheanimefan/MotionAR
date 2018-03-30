@@ -31,12 +31,15 @@ class ARVisualizationManager: NSObject {
         self.delegate?.onSettingChange()
     }
     
+    func removeSetting(index:Int){
+        self.visualizations.remove(at: index)
+        self.delegate?.onSettingChange()
+    }
+    
     func updateDefaults(){
         let vizDict = self.visualizations.map { (viz) -> [String:Any] in
             var dict = viz.settings
             dict["musicAssetURL"] = (dict["musicAssetURL"] != nil) ? dict["musicAssetURL"]! : ("") as Any
-            print(dict["musicAssetURL"])
-            print(type(of:dict["musicAssetURL"]))
            
             return dict
         }
@@ -66,6 +69,8 @@ class ARVisualizationManager: NSObject {
                 
                 self.addSetting(setting: viz)
             })
+            
+            self.delegate?.onSettingChange()
         }
     }
 

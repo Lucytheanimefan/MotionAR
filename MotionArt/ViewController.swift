@@ -25,20 +25,17 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         ARVisualizationManager.shared.delegate = self
         // Do any additional setup after loading the view, typically from a nib.
-        ARVisualizationManager.shared.recreateVisualizations()
+        //ARVisualizationManager.shared.recreateVisualizations()
     }
     
     override func viewDidAppear(_ animated: Bool) {
+        ARVisualizationManager.shared.recreateVisualizations()
         if ARVisualizationManager.shared.needsRefresh{
             DispatchQueue.main.async {
                 self.tableView.reloadData()
             }
             ARVisualizationManager.shared.needsRefresh = false
         }
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        ARVisualizationManager.shared.updateDefaults()
     }
 
     override func didReceiveMemoryWarning() {
@@ -121,6 +118,16 @@ extension ViewController: UITableViewDataSource{
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return ARVisualizationManager.shared.visualizations.count
     }
+    
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+        if (editingStyle == UITableViewCellEditingStyle.delete){
+            ARVisualizationManager.shared.removeSetting(index: indexPath.row)
+        }
+        else if (editingStyle == UITableViewCellEditingStyle.insert){
+            print("Insert mode")
+        }
+    }
+    
 }
 
 extension ViewController: ARVisualizationManagerDelegate{
