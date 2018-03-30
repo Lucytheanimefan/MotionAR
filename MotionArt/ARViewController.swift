@@ -103,7 +103,7 @@ class ARViewController: UIViewController {
     
     // MARK: Recording
     @IBAction func startRecording(_ sender: UIBarButtonItem) {
-        if let url = self.musicAssetURL{
+        if let url = ARVizSettings.musicAssetURL{
             print("Music URL: \(url)")
             audioTransformer.begin(file: url)
         }

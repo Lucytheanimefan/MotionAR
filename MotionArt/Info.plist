@@ -2,10 +2,10 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>NSAppleMusicUsageDescription</key>
+	<string>This app needs music to visualize.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Need to use your microphone for screen recording</string>
-	<key>NSAppleMusicUsageDescription</key>
-	<string>For music to visualize</string>
 	<key>NSCameraUsageDescription</key>
 	<string>For AR visualization</string>
 	<key>NSMotionUsageDescription</key>

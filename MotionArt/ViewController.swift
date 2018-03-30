@@ -13,10 +13,11 @@ class ViewController: UIViewController {
     // "anime" or "motion"
     var option:String! = "motion"
 
+    var mediaPicker: MPMediaPickerController?
     
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var selectedMusicLabel: UILabel!
-    
+    var musicAssetURL:URL!
 
     var selectedARViz:ARVisualization!
     
@@ -28,7 +29,9 @@ class ViewController: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         if ARVisualizationManager.shared.needsRefresh{
-            self.tableView.reloadData()
+            DispatchQueue.main.async {
+                self.tableView.reloadData()
+            }
             ARVisualizationManager.shared.needsRefresh = false
         }
     }
@@ -41,6 +44,7 @@ class ViewController: UIViewController {
     @IBAction func addARVisualization(_ sender: UIButton) {
         self.performSegue(withIdentifier: "addVizSegue", sender: self)
     }
+
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let vc = segue.destination as? ARViewController{
@@ -48,6 +52,44 @@ class ViewController: UIViewController {
             //vc.musicAssetURL = self.musicAssetURL
             vc.ARVizSettings = self.selectedARViz
         }
+    }
+    
+    @IBAction func displayMediaPicker(_ sender: UIButton) {
+        self.displayMediaPicker()
+    }
+
+    func displayMediaPicker(){
+        mediaPicker = MPMediaPickerController(mediaTypes: .anyAudio)
+
+        if let picker = mediaPicker{
+            picker.delegate = self
+            view.addSubview(picker.view)
+            self.present(picker, animated: true, completion: nil)
+        }
+        else
+        {
+            print("Error: Couldn't instantiate media picker")
+        }
+    }
+}
+
+
+extension ViewController: MPMediaPickerControllerDelegate{
+    func mediaPicker(_ mediaPicker: MPMediaPickerController, didPickMediaItems mediaItemCollection: MPMediaItemCollection) {
+        // Get the file
+        let musicItem = mediaItemCollection.items[0]
+        self.selectedMusicLabel.text = musicItem.title
+        if let assetURL = musicItem.value(forKey: MPMediaItemPropertyAssetURL) as? URL
+        {
+            self.musicAssetURL = assetURL
+        }
+
+
+        mediaPicker.dismiss(animated: true, completion: nil)
+    }
+
+    func mediaPickerDidCancel(_ mediaPicker: MPMediaPickerController) {
+        self.dismiss(animated: true, completion: nil)
     }
 }
 
@@ -63,6 +105,7 @@ extension ViewController: UITableViewDelegate{
             return
         }
         self.selectedARViz = ARVisualizationManager.shared.visualizations[indexPath.row]
+        self.selectedARViz.musicAssetURL = self.musicAssetURL
         self.performSegue(withIdentifier: "toARView", sender: self)
     }
 }

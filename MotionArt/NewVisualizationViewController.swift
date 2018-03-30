@@ -28,12 +28,26 @@ class NewVisualizationViewController: UIViewController {
         ringSeparationField.delegate = self
         numRingsField.delegate = self
         
-        // Do any additional setup after loading the view.
+        NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillShow(sender:)), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillHide(sender:)), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
+
     }
+    
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    @objc func keyboardWillShow(sender: NSNotification) {
+        print("Move view 150 points upward")
+        self.view.frame.origin.y = -150 // Move view 150 points upward
+    }
+    
+    @objc func keyboardWillHide(sender: NSNotification) {
+        print("Move view to original position")
+        self.view.frame.origin.y = 0 // Move view to original position
     }
     
     @IBAction func save(_ sender: UIBarButtonItem) {
@@ -60,46 +74,9 @@ class NewVisualizationViewController: UIViewController {
         // Pass the selected object to the new view controller.
     }
  
-    
-    @IBAction func displayMediaPicker(_ sender: UIButton) {
-        self.displayMediaPicker()
-    }
-    
-    func displayMediaPicker(){
-        mediaPicker = MPMediaPickerController(mediaTypes: .anyAudio)
-        
-        if let picker = mediaPicker{
-            picker.delegate = self
-            view.addSubview(picker.view)
-            self.present(picker, animated: true, completion: nil)
-        }
-        else
-        {
-            print("Error: Couldn't instantiate media picker")
-        }
-    }
 
 }
 
-extension NewVisualizationViewController: MPMediaPickerControllerDelegate{
-    func mediaPicker(_ mediaPicker: MPMediaPickerController, didPickMediaItems mediaItemCollection: MPMediaItemCollection) {
-        // Get the file
-        let musicItem = mediaItemCollection.items[0]
-        self.selectedMusicLabel.text = musicItem.title
-        if let assetURL = musicItem.value(forKey: MPMediaItemPropertyAssetURL) as? URL
-        {
-            visualization.musicAssetURL = assetURL
-            //self.musicAssetURL = assetURL
-        }
-        
-        
-        mediaPicker.dismiss(animated: true, completion: nil)
-    }
-    
-    func mediaPickerDidCancel(_ mediaPicker: MPMediaPickerController) {
-        self.dismiss(animated: true, completion: nil)
-    }
-}
 
 extension NewVisualizationViewController: UITextFieldDelegate{
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
