@@ -10,7 +10,7 @@ import UIKit
 import MediaPlayer
 
 class NewVisualizationViewController: UIViewController {
-
+    
     var visualization = ARVisualization()
     
     var mediaPicker: MPMediaPickerController?
@@ -21,6 +21,10 @@ class NewVisualizationViewController: UIViewController {
     @IBOutlet weak var numRingsField: UITextField!
     @IBOutlet weak var selectedMusicLabel: UILabel!
     
+    @IBOutlet weak var numRingsSlider: UISlider!
+    
+    @IBOutlet weak var boxDimensionSlider: UISlider!
+    @IBOutlet weak var ringSepSlider: UISlider!
     var existingCellIndex:Int?
     
     override func viewDidLoad() {
@@ -30,6 +34,10 @@ class NewVisualizationViewController: UIViewController {
         numRingsField.delegate = self
         
         nameField.text = visualization.name
+        numRingsSlider.setValue(Float(visualization.num_rings), animated: true)
+        ringSepSlider.setValue(visualization.ring_separation, animated: true)
+        boxDimensionSlider.setValue(visualization.box_dimensions, animated: true)
+        
         boxDimensionsField.text = visualization.box_dimensions.description
         ringSeparationField.text = visualization.ring_separation.description
         numRingsField.text = visualization.num_rings.description
@@ -38,10 +46,10 @@ class NewVisualizationViewController: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillShow(sender:)), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillHide(sender:)), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
-
+        
     }
     
-
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
@@ -60,7 +68,7 @@ class NewVisualizationViewController: UIViewController {
     @IBAction func save(_ sender: UIBarButtonItem) {
         visualization.name = self.nameField.text
         if let rings = self.numRingsField.text{
-            visualization.num_rings = Int(rings)!
+            visualization.num_rings = Int(Float(rings)!)
         }
         if let sep = self.ringSeparationField.text{
             visualization.ring_separation = Float(sep)!
@@ -90,9 +98,23 @@ class NewVisualizationViewController: UIViewController {
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         self.view.endEditing(true)
     }
-
- 
-
+    
+    @IBAction func sliderValueChanged(_ sender: UISlider) {
+        if (sender.restorationIdentifier == "numRings")
+        {
+            let rounded = sender.value.rounded();  //Casting to an int will truncate, round down
+            sender.setValue(rounded, animated: true)
+            self.numRingsField.text = rounded.description
+        }
+        else if (sender.restorationIdentifier == "ringSep"){
+            self.ringSeparationField.text = sender.value.description
+        }
+        else if (sender.restorationIdentifier == "boxDimensions"){
+            self.boxDimensionsField.text = sender.value.description
+        }
+    }
+    
+    
 }
 
 
