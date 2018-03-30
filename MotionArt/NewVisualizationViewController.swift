@@ -73,6 +73,11 @@ class NewVisualizationViewController: UIViewController {
         // Get the new view controller using segue.destinationViewController.
         // Pass the selected object to the new view controller.
     }
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        self.view.endEditing(true)
+    }
+
  
 
 }
@@ -82,7 +87,7 @@ extension NewVisualizationViewController: UITextFieldDelegate{
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         // allow backspace
         // allow digit 0 to 9
-        return (string.count > 0) && (Int(string) != nil)
+        return (string.count > 0) || (Int(string) != nil)
 
     }
 }

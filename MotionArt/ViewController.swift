@@ -106,6 +106,8 @@ extension ViewController: UITableViewDelegate{
         }
         self.selectedARViz = ARVisualizationManager.shared.visualizations[indexPath.row]
         self.selectedARViz.musicAssetURL = self.musicAssetURL
+        // Update the object that's stored
+        ARVisualizationManager.shared.visualizations[indexPath.row] = self.selectedARViz
         self.performSegue(withIdentifier: "toARView", sender: self)
     }
 }

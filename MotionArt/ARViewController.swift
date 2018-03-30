@@ -74,8 +74,8 @@ class ARViewController: UIViewController {
     
     @IBAction func cancel(_ sender: UIBarButtonItem) {
         self.dismiss(animated: true) {
-            if (self.musicAssetURL != nil){
-                self.musicAssetURL = nil
+            if (self.ARVizSettings.musicAssetURL != nil){
+                //self.musicAssetURL = nil
                 self.audioTransformer.cancel()
             }
         }

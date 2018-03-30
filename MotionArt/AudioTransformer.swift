@@ -26,10 +26,12 @@ class AudioTransformer: NSObject {
     
     static let shared = AudioTransformer()
     
+    var addedNode:Bool = false
+    
     func begin(file:URL){
         os_log("%@: Begin", self.description)
         audioEngine.attach(audioNode)
-        
+        addedNode = true
         guard let audioFile = try? AVAudioFile(forReading: file) else {
             os_log("%@: Invalid file: %@", self.description, (file.absoluteString))
             return
@@ -44,8 +46,11 @@ class AudioTransformer: NSObject {
     }
     
     func cancel(){
-        audioEngine.inputNode.removeTap(onBus: 0)
-        audioEngine.detach(audioNode)
+        if (addedNode){
+            audioEngine.inputNode.removeTap(onBus: 0)
+            audioEngine.detach(audioNode)
+            addedNode = false
+        }
     }
     
     private func retrieveAudioBuffer(){
