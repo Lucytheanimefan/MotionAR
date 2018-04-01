@@ -20,4 +20,5 @@ struct Constants{
     static let NUM_RINGS:Int = 5
     static let RING_SEPARATION:Float = 0.4
     static let BOX_DIMENSIONS:Float = 0.2
+    static let RADIUS:Float = 1
 }

@@ -14,7 +14,8 @@ import ARKit
 extension CMDeviceMotion{
     
     // accelerometer is in units of g-force (g = 9.8 m/s/s)
-    // Let's assume the max acceleration of the human is 1.5g <- normalize to this
+    //to distinguish acceleration relative to free fall from simple acceleration (rate of change of velocity), the unit g (or g) is often used.
+    // TODO: Assuming the max acceleration of the human is 1.5g <- normalize to this
     func normalizedAcceleration()->(CGFloat, CGFloat, CGFloat){
         return (CGFloat(abs(self.userAcceleration.x))/1.5,
                 CGFloat(abs(self.userAcceleration.y))/1.5,
@@ -33,10 +34,17 @@ extension CMDeviceMotion{
                 Float(self.gravity.z))
     }
     
+    //Rotation values are measured in radians per second around the given axis. Rotation values may be positive or negative depending on the direction of rotation.
     func rotationRate()->(CGFloat, CGFloat, CGFloat){
         return (CGFloat(self.rotationRate.x),
                 CGFloat(self.rotationRate.y),
                 CGFloat(self.rotationRate.z))
+    }
+    
+    func rotationRateFloat()->(Float, Float, Float){
+        return (Float(self.rotationRate.x),
+                Float(self.rotationRate.y),
+                Float(self.rotationRate.z))
     }
     
     func rollPitchYaw()->(Float, Float, Float){
@@ -53,6 +61,9 @@ extension ARSCNView{
 extension SCNNode{
     func ringIndex()->Int?{
         if let name = self.name{
+            #if DEBUG
+            print(name)
+            #endif
             return Int(String(describing: name.last!))
         }
         return nil

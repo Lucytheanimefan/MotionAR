@@ -24,6 +24,7 @@ class ARViewController: UIViewController {
     
     var activityManager:CMMotionActivityManager!
     var motionManager:CMMotionManager!
+    var altitudeManager:CMAltimeter!
     
     var nodes:[SCNNode] = [SCNNode]()
     
@@ -42,15 +43,20 @@ class ARViewController: UIViewController {
     
     var audioTransformer:AudioTransformer!
     
+    var currentPosition:SCNVector3!
+    
+    lazy var incrementAngle:Float = {
+        return (4*Float.pi) / Float(ARVizSettings.num_nodes)
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupSceneView()
         self.audioTransformer = AudioTransformer()
         self.activityManager = CMMotionActivityManager()
         self.motionManager = CMMotionManager()
+        self.altitudeManager = CMAltimeter()
         audioTransformer.delegate = self
-        
-        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -192,12 +198,13 @@ class ARViewController: UIViewController {
     // MARK: Create Rings
     func createRings(numRings:Int, separationDistance:Float){
         for i in -numRings/2 ..< numRings/2{
-            let nodes = addRing(y: Float(i)*separationDistance, name:"ring_\(i)")
+            let nodes = addRing(y: Float(i)*separationDistance, name:"ring_\(i + numRings/2)")
             self.ringNodes.append(nodes)
         }
     }
     
     func addRing(nodes:[SCNNode]? = nil, radius:Float = 1, x:Float? = nil, y:Float? = nil, z:Float? = nil, name:String? = nil) -> [SCNNode]{
+        print(name)
         var myNodes = [SCNNode]()
         if let nodes = nodes{
             myNodes = nodes
@@ -237,27 +244,35 @@ class ARViewController: UIViewController {
         self.sceneView.addNode(node: node)
     }
     
+    // MARK: Motion
     func beginMotionData(){
+        var oldIndex:Int = -1
         self.motionManager.startDeviceMotionUpdates(to: OperationQueue.current!) { (deviceMotion, error) in
-            guard error == nil && deviceMotion != nil else{
+            guard error == nil else{
                 print(error.debugDescription)
+                return
+            }
+            
+            guard let deviceMotion = deviceMotion else {
                 return
             }
             self.deviceMotion = deviceMotion
             
-            let (xAccel, yAccel, zAccel) = (deviceMotion?.normalizedAcceleration())!
+            let (xAccel, yAccel, zAccel) = deviceMotion.normalizedAcceleration()
             
-            let (roll, pitch, yaw) = (deviceMotion?.rollPitchYaw())!
+            let (roll, pitch, yaw) = deviceMotion.rollPitchYaw()
+            
+            let (xRot, yRot, zRot) = deviceMotion.rotationRateFloat()
             
             #if DEBUG
                 //print("Acceleration: \(xAccel),\(yAccel),\(zAccel)")
             #endif
             
-            let (xGravity, yGravity, zGravity) = (deviceMotion?.absGravity())!
+            let (xGravity, yGravity, zGravity) = deviceMotion.absGravity()
             
-            let (xPosGravity, yPosGravity, zPosGravity) = (deviceMotion?.positionGravity())!
-            
-            self.nodes.forEach({ (node) in
+            let (xPosGravity, yPosGravity, zPosGravity) = deviceMotion.positionGravity()
+           
+            for (i, node) in self.nodes.enumerated(){
                 if let geometry = node.geometry as? SCNBox{
                     let minDimension = min(geometry.height, geometry.width, geometry.length)/2
                     geometry.chamferRadius = CGFloat(yGravity)*minDimension
@@ -267,21 +282,60 @@ class ARViewController: UIViewController {
                     let accelColor = UIColor(red: xAccel, green: yAccel, blue: zAccel, alpha: 1)
                     node.geometry?.setColor(color: accelColor)
                 }
+   
+                
                 if let ringIndex = node.ringIndex(){
-                    //print(ringIndex)
+                    if (oldIndex != ringIndex){
+                        print("\(oldIndex), \(ringIndex)")
+                        oldIndex = ringIndex
+                    }
                     switch ringIndex{
                     case 0: // top ring
-                        node.rotation = SCNVector4Make(roll, pitch, yaw, xPosGravity)
+                        return
+                    //node.rotation = SCNVector4Make(roll, pitch, yaw, xPosGravity)
                     case 1:
-                        node.rotation = SCNVector4Make(roll*10, pitch*10, yaw*10, zPosGravity)
+                        print("Move")
+                        let xN = Float(cos(Float((i+1)/2) * self.incrementAngle)) * Constants.RADIUS //TODO: change radius
+                        let zN = Float(sin(Float((i+1)/2) * self.incrementAngle)) * Constants.RADIUS
+                        let yN = Float((i+1))*self.ARVizSettings.ring_separation
+                        let action = SCNAction.move(to: SCNVector3Make(xN, yN, zN), duration: 1)
+                        node.runAction(action, completionHandler: {
+                            print("Done action")
+                        })
                     case 2:
-                        node.rotation = SCNVector4Make(roll, pitch, yaw, yPosGravity)
+                        return
+                    //node.rotation = SCNVector4Make(roll, pitch, yaw, yPosGravity)
                     default:
-                        node.rotation = SCNVector4Make(0, 0, 0, 0)
+                        //node.rotation = SCNVector4Make(0, 0, 0, 0)
                         print("Not one of the 3 rings")
                     }
                 }
-            })
+            }
+        }
+    }
+    
+    func beginMotionCategorization(){
+        self.activityManager.startActivityUpdates(to: OperationQueue.current!) { (activity) in
+            guard let activity = activity else {
+                return
+            }
+            if (activity.walking){
+                
+            }
+            else if (activity.stationary){
+                
+            }
+        }
+    }
+    
+    func beginAltitudeData(){
+        self.altitudeManager.startRelativeAltitudeUpdates(to: OperationQueue.current!) { (altitude, error) in
+            guard error == nil && altitude != nil else {
+                print("Error with altimeter: \(error.debugDescription)")
+                return
+            }
+            //The change in altitude (in meters) since the first reported event.
+            //altitude?.relativeAltitude
         }
     }
     
@@ -323,7 +377,7 @@ extension ARViewController:RPPreviewViewControllerDelegate{
 
 extension ARViewController:ARSessionDelegate{
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
-        let currentPosition = frame.camera.transform.position()
+        self.currentPosition = frame.camera.transform.position()
         //print("Current position: \(currentPosition)")
         
         for (i, node) in self.nodes.enumerated(){
