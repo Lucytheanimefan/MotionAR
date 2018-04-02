@@ -45,9 +45,9 @@ class ARViewController: UIViewController {
     
     var currentPosition:SCNVector3!
     
-    lazy var incrementAngle:Float = {
-        return (4*Float.pi) / Float(ARVizSettings.num_nodes)
-    }()
+//    lazy var incrementAngle:Float = {
+//        return (4*Float.pi) / Float(ARVizSettings.num_nodes)
+//    }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -76,6 +76,10 @@ class ARViewController: UIViewController {
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
+    }
+    
+    func incrementAngle(adjustment:Float) -> Float {
+        return (4*Float.pi + adjustment) / Float(ARVizSettings.num_nodes)
     }
     
     @IBAction func cancel(_ sender: UIBarButtonItem) {
@@ -267,17 +271,6 @@ class ARViewController: UIViewController {
             
             let (xGravity, yGravity, zGravity) = deviceMotion.absGravity()
             let (xPosGravity, yPosGravity, zPosGravity) = deviceMotion.positionGravity()
-//            for (i, node) in self.nodes.enumerated(){
-//                if let geometry = node.geometry as? SCNBox{
-//                    let minDimension = min(geometry.height, geometry.width, geometry.length)/2
-//                    geometry.chamferRadius = CGFloat(yGravity)*minDimension
-//                }
-//
-//                if (self.option == "motion"){
-//                    let accelColor = UIColor(red: xAccel, green: yAccel, blue: zAccel, alpha: 1)
-//                    node.geometry?.setColor(color: accelColor)
-//                }
-//            }
             
             for (j, nodes) in self.ringNodes.enumerated(){
                 for (i, node) in nodes.enumerated(){
@@ -291,26 +284,15 @@ class ARViewController: UIViewController {
                     }
                     if (j == self.ringNodes.count/2)
                     {
-                        let xN = Float(cos(Float((i+1)/2) * self.incrementAngle)) * Constants.RADIUS //TODO: change radius
-                        let zN = Float(sin(Float((i+1)/2) * self.incrementAngle)) * Constants.RADIUS
+                        let rot = max(xRot, yRot, zRot)
+                        let xN = Float(cos(Float((i+1)/2) * self.incrementAngle(adjustment: rot))) * Constants.RADIUS //TODO: change radius
+                        let zN = Float(sin(Float((i+1)/2) * self.incrementAngle(adjustment: rot))) * Constants.RADIUS
                         let yN = Float(0)//Float((i+1))*self.ARVizSettings.ring_separation
-                        let action = SCNAction.move(to: SCNVector3Make(xN, yN, zN), duration: TimeInterval(xRot*10))
-                        node.runAction(action, completionHandler: {
-                            print("Done action")
-                        })
+                        
+                        node.position = SCNVector3Make(xN, yN, zN)
                     }
                 }
             }
-            
-//            for (i, node) in self.ringNodes[self.ringNodes.count/2].enumerated(){
-//                let xN = Float(cos(Float((i+1)/2) * self.incrementAngle)) * Constants.RADIUS //TODO: change radius
-//                let zN = Float(sin(Float((i+1)/2) * self.incrementAngle)) * Constants.RADIUS
-//                let yN = Float(0)//Float((i+1))*self.ARVizSettings.ring_separation
-//                let action = SCNAction.move(to: SCNVector3Make(xN, yN, zN), duration: TimeInterval(xRot*10))
-//                node.runAction(action, completionHandler: {
-//                    print("Done action")
-//                })
-//            }
         }
     }
     
