@@ -45,9 +45,7 @@ class ARViewController: UIViewController {
     
     var currentPosition:SCNVector3!
     
-//    lazy var incrementAngle:Float = {
-//        return (4*Float.pi) / Float(ARVizSettings.num_nodes)
-//    }()
+    var currentActivity:String!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -67,6 +65,7 @@ class ARViewController: UIViewController {
         
         self.createRings(numRings: /*Constants.NUM_RINGS*/ARVizSettings.num_rings, separationDistance: /*Constants.RING_SEPARATION*/ARVizSettings.ring_separation)
         self.beginMotionData()
+        self.beginMotionCategorization()
     }
     
     override func didReceiveMemoryWarning() {
@@ -78,7 +77,7 @@ class ARViewController: UIViewController {
         super.viewDidDisappear(animated)
     }
     
-    func incrementAngle(adjustment:Float) -> Float {
+    func incrementAngle(adjustment:Float = 0) -> Float {
         return (4*Float.pi + adjustment) / Float(ARVizSettings.num_nodes)
     }
     
@@ -302,10 +301,46 @@ class ARViewController: UIViewController {
                 return
             }
             if (activity.walking){
+                guard self.currentActivity != "walking" else {
+                    return
+                }
+                self.currentActivity = "walking"
                 
+                for (i, ring) in self.ringNodes.enumerated(){
+                    for (j, node) in ring.enumerated(){
+                        //if (i == 0 || i == self.ringNodes.count - 1){
+                        let xN = Float(cos(Float((j+1)/2) * self.incrementAngle())) * Constants.RADIUS //TODO: change radius
+                        let zN = Float(sin(Float((j+1)/2) * self.incrementAngle())) * Constants.RADIUS
+                        let yN = Float(i) * self.ARVizSettings.ring_separation//Float((i+1))*self.ARVizSettings.ring_separation
+                        node.position = SCNVector3Make(xN, yN, zN)
+                        //}
+                    }
+                }
             }
             else if (activity.stationary){
+                guard self.currentActivity != "stationary" else {
+                    return
+                }
+                print("Stationary!")
+                self.currentActivity = "stationary"
                 
+                // Make it a dome/sphere thing!
+                for (i, ring) in self.ringNodes.enumerated(){
+                    for (j, node) in ring.enumerated(){
+                        //if (i == 0 || i == self.ringNodes.count - 1){
+                        let xN = Float(cos(Float((j+1)/2) * self.incrementAngle())) * Constants.RADIUS/2 //TODO: change radius
+                        let zN = Float(sin(Float((j+1)/2) * self.incrementAngle())) * Constants.RADIUS/2
+                        let yN = Float(i) * self.ARVizSettings.ring_separation
+                        node.position = SCNVector3Make(xN, yN, zN)
+                        //}
+                    }
+                }
+            }
+            else if (activity.running){
+                guard self.currentActivity != "running" else {
+                    return
+                }
+                self.currentActivity = "running"
             }
         }
     }
