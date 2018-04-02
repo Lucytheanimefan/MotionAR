@@ -252,65 +252,65 @@ class ARViewController: UIViewController {
                 print(error.debugDescription)
                 return
             }
-            
             guard let deviceMotion = deviceMotion else {
                 return
             }
             self.deviceMotion = deviceMotion
-            
             let (xAccel, yAccel, zAccel) = deviceMotion.normalizedAcceleration()
-            
             let (roll, pitch, yaw) = deviceMotion.rollPitchYaw()
-            
             let (xRot, yRot, zRot) = deviceMotion.rotationRateFloat()
             
             #if DEBUG
+            //print("Rotation: \(xRot), \(yRot), \(zRot)")
                 //print("Acceleration: \(xAccel),\(yAccel),\(zAccel)")
             #endif
             
             let (xGravity, yGravity, zGravity) = deviceMotion.absGravity()
-            
             let (xPosGravity, yPosGravity, zPosGravity) = deviceMotion.positionGravity()
-           
-            for (i, node) in self.nodes.enumerated(){
-                if let geometry = node.geometry as? SCNBox{
-                    let minDimension = min(geometry.height, geometry.width, geometry.length)/2
-                    geometry.chamferRadius = CGFloat(yGravity)*minDimension
-                }
-                
-                if (self.option == "motion"){
-                    let accelColor = UIColor(red: xAccel, green: yAccel, blue: zAccel, alpha: 1)
-                    node.geometry?.setColor(color: accelColor)
-                }
-   
-                
-                if let ringIndex = node.ringIndex(){
-                    if (oldIndex != ringIndex){
-                        print("\(oldIndex), \(ringIndex)")
-                        oldIndex = ringIndex
+//            for (i, node) in self.nodes.enumerated(){
+//                if let geometry = node.geometry as? SCNBox{
+//                    let minDimension = min(geometry.height, geometry.width, geometry.length)/2
+//                    geometry.chamferRadius = CGFloat(yGravity)*minDimension
+//                }
+//
+//                if (self.option == "motion"){
+//                    let accelColor = UIColor(red: xAccel, green: yAccel, blue: zAccel, alpha: 1)
+//                    node.geometry?.setColor(color: accelColor)
+//                }
+//            }
+            
+            for (j, nodes) in self.ringNodes.enumerated(){
+                for (i, node) in nodes.enumerated(){
+                    if let geometry = node.geometry as? SCNBox{
+                        let minDimension = min(geometry.height, geometry.width, geometry.length)/2
+                        geometry.chamferRadius = CGFloat(yGravity)*minDimension
                     }
-                    switch ringIndex{
-                    case 0: // top ring
-                        return
-                    //node.rotation = SCNVector4Make(roll, pitch, yaw, xPosGravity)
-                    case 1:
-                        print("Move")
+                    if (self.option == "motion"){
+                        let accelColor = UIColor(red: xAccel, green: yAccel, blue: zAccel, alpha: 1)
+                        node.geometry?.setColor(color: accelColor)
+                    }
+                    if (j == self.ringNodes.count/2)
+                    {
                         let xN = Float(cos(Float((i+1)/2) * self.incrementAngle)) * Constants.RADIUS //TODO: change radius
                         let zN = Float(sin(Float((i+1)/2) * self.incrementAngle)) * Constants.RADIUS
-                        let yN = Float((i+1))*self.ARVizSettings.ring_separation
-                        let action = SCNAction.move(to: SCNVector3Make(xN, yN, zN), duration: 1)
+                        let yN = Float(0)//Float((i+1))*self.ARVizSettings.ring_separation
+                        let action = SCNAction.move(to: SCNVector3Make(xN, yN, zN), duration: TimeInterval(xRot*10))
                         node.runAction(action, completionHandler: {
                             print("Done action")
                         })
-                    case 2:
-                        return
-                    //node.rotation = SCNVector4Make(roll, pitch, yaw, yPosGravity)
-                    default:
-                        //node.rotation = SCNVector4Make(0, 0, 0, 0)
-                        print("Not one of the 3 rings")
                     }
                 }
             }
+            
+//            for (i, node) in self.ringNodes[self.ringNodes.count/2].enumerated(){
+//                let xN = Float(cos(Float((i+1)/2) * self.incrementAngle)) * Constants.RADIUS //TODO: change radius
+//                let zN = Float(sin(Float((i+1)/2) * self.incrementAngle)) * Constants.RADIUS
+//                let yN = Float(0)//Float((i+1))*self.ARVizSettings.ring_separation
+//                let action = SCNAction.move(to: SCNVector3Make(xN, yN, zN), duration: TimeInterval(xRot*10))
+//                node.runAction(action, completionHandler: {
+//                    print("Done action")
+//                })
+//            }
         }
     }
     

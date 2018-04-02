@@ -42,9 +42,9 @@ extension CMDeviceMotion{
     }
     
     func rotationRateFloat()->(Float, Float, Float){
-        return (Float(self.rotationRate.x),
-                Float(self.rotationRate.y),
-                Float(self.rotationRate.z))
+        return (Float(abs(self.rotationRate.x)),
+                Float(abs(self.rotationRate.y)),
+                Float(abs(self.rotationRate.z)))
     }
     
     func rollPitchYaw()->(Float, Float, Float){
