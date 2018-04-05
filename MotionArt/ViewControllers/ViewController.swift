@@ -91,6 +91,8 @@ extension ViewController: MPMediaPickerControllerDelegate{
         if let assetURL = musicItem.value(forKey: MPMediaItemPropertyAssetURL) as? URL
         {
             self.musicAssetURL = assetURL
+            let url = Bundle.main.url(forResource: "shigatsu_short", withExtension: "wav")
+            AudioTransformer.shared.computeMFCC(audioFilePath: url)
         }
 
 

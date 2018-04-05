@@ -7,6 +7,7 @@
 //
 import AVFoundation
 import Accelerate
+import aubio
 import os.log
 
 protocol AudioTransformerDelegate{
@@ -27,6 +28,8 @@ class AudioTransformer: NSObject {
     static let shared = AudioTransformer()
     
     var addedNode:Bool = false
+    
+    var aubiomfcc = new_aubio_mfcc(uint_t(Constants.NUM_NODES), 20, 13, 16000)
     
     func begin(file:URL){
         os_log("%@: Begin", self.description)
@@ -119,6 +122,7 @@ class AudioTransformer: NSObject {
         vDSP_vsmul(sqrtq(magnitudes), 1, [2.0 / Float(inputCount)],
                    &normalizedMagnitudes, 1, vDSP_Length(inputCount))
         
+        
         delegate.dealWithFFTMagnitudes(magnitudes: normalizedMagnitudes)
         
         #if DEBUG
@@ -132,6 +136,63 @@ class AudioTransformer: NSObject {
         //return buffer.elements
     }
     
+    
+    func computeMFCC(audioFilePath:URL?) -> [Float]{
+        print(audioFilePath!.absoluteString)
+        
+        var dataStore:[Float] = [Float]()
+//        let dir = NSSearchPathForDirectoriesInDomains(FileManager.SearchPathDirectory.documentDirectory, FileManager.SearchPathDomainMask.allDomainsMask, true).first
+//        let path = NSURL(fileURLWithPath: dir!).appendingPathComponent(audioFilePath.relativeString)
+        
+        guard let audioPath = audioFilePath else {
+            return dataStore
+        }
+        
+        print("File path: \(audioPath)")
+        
+        
+        let hop_size : uint_t = uint_t(Constants.NUM_NODES)
+        let a = new_fvec(hop_size)
+        let b = new_aubio_source(audioPath.path, 0, hop_size)
+        
+        let win_s:uint_t = uint_t(Constants.NUM_NODES)
+        let n_filters:uint_t = 20
+        let n_coefs:uint_t = 13
+        let samplerate:uint_t = 16000
+        let iin = new_cvec(win_s)
+        let oout = new_fvec(n_coefs)
+        
+        let c = new_aubio_mfcc(win_s, n_filters, n_coefs, samplerate);
+        
+        var read: uint_t = 0
+        var total_frames : uint_t = 0
+        
+        while (true) {
+            aubio_source_do(b, a, &read)
+            aubio_mfcc_do(c, iin, oout)
+            
+            print(oout as Any)
+            
+            total_frames += read
+            
+            if (read < hop_size) { break }
+        }
+        print("read", total_frames, "frames at", aubio_source_get_samplerate(b), "Hz")
+        
+        del_aubio_source(b)
+        del_fvec(a)
+        
+        del_aubio_mfcc(c)
+        
+        if let data = fvec_get_data(oout) {
+            for j in 0..<Int(n_coefs) {
+                dataStore.append(data[j])
+            }
+        }
+    
+        print(dataStore)
+        return dataStore
+    }
     
     
     func sqrtq(_ x: [Float]) -> [Float] {

@@ -48,6 +48,11 @@
 		7C9E33602075B88F002B5F85 /* Structure.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C9E33592075B88E002B5F85 /* Structure.swift */; };
 		7C9E33612075B88F002B5F85 /* Dataset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C9E335A2075B88E002B5F85 /* Dataset.swift */; };
 		7C9E33632075BB08002B5F85 /* KNNDTW.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C9E33622075BB08002B5F85 /* KNNDTW.swift */; };
+		7C9E336B207606C7002B5F85 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C9E336A207606C7002B5F85 /* main.swift */; };
+		7C9E336F207606EF002B5F85 /* KNNDTW.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C9E33622075BB08002B5F85 /* KNNDTW.swift */; };
+		7C9E337020760754002B5F85 /* MLConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C6B1137206EB98300D7E590 /* MLConverter.swift */; };
+		7C9E337220760856002B5F85 /* aubio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7C9E337120760856002B5F85 /* aubio.framework */; };
+		7C9E3374207610B1002B5F85 /* shigatsu_short.wav in Resources */ = {isa = PBXBuildFile; fileRef = 7C9E3373207610B1002B5F85 /* shigatsu_short.wav */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -85,6 +90,15 @@
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		7C9E3366207606C7002B5F85 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
@@ -118,6 +132,10 @@
 		7C9E33592075B88E002B5F85 /* Structure.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Structure.swift; sourceTree = "<group>"; };
 		7C9E335A2075B88E002B5F85 /* Dataset.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Dataset.swift; sourceTree = "<group>"; };
 		7C9E33622075BB08002B5F85 /* KNNDTW.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KNNDTW.swift; sourceTree = "<group>"; };
+		7C9E3368207606C7002B5F85 /* MotionArtCLI */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = MotionArtCLI; sourceTree = BUILT_PRODUCTS_DIR; };
+		7C9E336A207606C7002B5F85 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
+		7C9E337120760856002B5F85 /* aubio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = aubio.framework; path = "aubio-0.4.5.iosuniversal_framework/aubio.framework"; sourceTree = "<group>"; };
+		7C9E3373207610B1002B5F85 /* shigatsu_short.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = shigatsu_short.wav; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -125,10 +143,18 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7C9E337220760856002B5F85 /* aubio.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		7C7173E5205C236C004830C0 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7C9E3365207606C7002B5F85 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -162,8 +188,10 @@
 		7C7173CB205C236B004830C0 = {
 			isa = PBXGroup;
 			children = (
+				7C9E337120760856002B5F85 /* aubio.framework */,
 				7C7173D6205C236B004830C0 /* MotionArt */,
 				7C7173EB205C236C004830C0 /* MotionArtTests */,
+				7C9E3369207606C7002B5F85 /* MotionArtCLI */,
 				7C7173D5205C236B004830C0 /* Products */,
 				7C9E333E2075B51C002B5F85 /* Frameworks */,
 			);
@@ -174,6 +202,7 @@
 			children = (
 				7C7173D4205C236B004830C0 /* MotionArt.app */,
 				7C7173E8205C236C004830C0 /* MotionArtTests.xctest */,
+				7C9E3368207606C7002B5F85 /* MotionArtCLI */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -181,6 +210,7 @@
 		7C7173D6205C236B004830C0 /* MotionArt */ = {
 			isa = PBXGroup;
 			children = (
+				7C9E3373207610B1002B5F85 /* shigatsu_short.wav */,
 				7C6B1139206EBDC700D7E590 /* ViewControllers */,
 				7C6B1136206EB96A00D7E590 /* ML */,
 				7C7173D7205C236B004830C0 /* AppDelegate.swift */,
@@ -230,6 +260,14 @@
 			path = NeuralNet;
 			sourceTree = "<group>";
 		};
+		7C9E3369207606C7002B5F85 /* MotionArtCLI */ = {
+			isa = PBXGroup;
+			children = (
+				7C9E336A207606C7002B5F85 /* main.swift */,
+			);
+			path = MotionArtCLI;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -269,13 +307,30 @@
 			productReference = 7C7173E8205C236C004830C0 /* MotionArtTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
+		7C9E3367207606C7002B5F85 /* MotionArtCLI */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7C9E336C207606C7002B5F85 /* Build configuration list for PBXNativeTarget "MotionArtCLI" */;
+			buildPhases = (
+				7C9E3364207606C7002B5F85 /* Sources */,
+				7C9E3365207606C7002B5F85 /* Frameworks */,
+				7C9E3366207606C7002B5F85 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = MotionArtCLI;
+			productName = MotionArtCLI;
+			productReference = 7C9E3368207606C7002B5F85 /* MotionArtCLI */;
+			productType = "com.apple.product-type.tool";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
 		7C7173CC205C236B004830C0 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 0920;
+				LastSwiftUpdateCheck = 0930;
 				LastUpgradeCheck = 0920;
 				ORGANIZATIONNAME = "Lucy Zhang";
 				TargetAttributes = {
@@ -289,6 +344,10 @@
 						TestTargetID = 7C7173D3205C236B004830C0;
 					};
 					7C9E33472075B576002B5F85 = {
+						CreatedOnToolsVersion = 9.3;
+						ProvisioningStyle = Automatic;
+					};
+					7C9E3367207606C7002B5F85 = {
 						CreatedOnToolsVersion = 9.3;
 						ProvisioningStyle = Automatic;
 					};
@@ -310,6 +369,7 @@
 				7C7173D3205C236B004830C0 /* MotionArt */,
 				7C7173E7205C236C004830C0 /* MotionArtTests */,
 				7C9E33472075B576002B5F85 /* All */,
+				7C9E3367207606C7002B5F85 /* MotionArtCLI */,
 			);
 		};
 /* End PBXProject section */
@@ -320,6 +380,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				7C7173E2205C236B004830C0 /* LaunchScreen.storyboard in Resources */,
+				7C9E3374207610B1002B5F85 /* shigatsu_short.wav in Resources */,
 				7C71740020605308004830C0 /* Collision.scnp in Resources */,
 				7C7173FD2060529D004830C0 /* spark.png in Resources */,
 				7C7173DF205C236B004830C0 /* Assets.xcassets in Resources */,
@@ -369,6 +430,16 @@
 			buildActionMask = 2147483647;
 			files = (
 				7C7173ED205C236C004830C0 /* MotionArtTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7C9E3364207606C7002B5F85 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7C9E336B207606C7002B5F85 /* main.swift in Sources */,
+				7C9E336F207606EF002B5F85 /* KNNDTW.swift in Sources */,
+				7C9E337020760754002B5F85 /* MLConverter.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -526,6 +597,10 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 65ZN6CM2H7;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/aubio-0.4.5.iosuniversal_framework",
+				);
 				INFOPLIST_FILE = MotionArt/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = lucy.MotionArt;
@@ -542,6 +617,10 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 65ZN6CM2H7;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/aubio-0.4.5.iosuniversal_framework",
+				);
 				INFOPLIST_FILE = MotionArt/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = lucy.MotionArt;
@@ -603,6 +682,38 @@
 			};
 			name = Release;
 		};
+		7C9E336D207606C7002B5F85 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 65ZN6CM2H7;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_VERSION = 4.0;
+			};
+			name = Debug;
+		};
+		7C9E336E207606C7002B5F85 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 65ZN6CM2H7;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_VERSION = 4.0;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -638,6 +749,15 @@
 			buildConfigurations = (
 				7C9E33492075B576002B5F85 /* Debug */,
 				7C9E334A2075B576002B5F85 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		7C9E336C207606C7002B5F85 /* Build configuration list for PBXNativeTarget "MotionArtCLI" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7C9E336D207606C7002B5F85 /* Debug */,
+				7C9E336E207606C7002B5F85 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

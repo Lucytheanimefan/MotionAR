@@ -33,8 +33,9 @@ public class KNNDTW: NSObject {
         
         for set in data_sets {
             
-            if (set.curve.count == 0 || set.label == "") {
+            guard (set.curve.count > 0 && set.label != "") else {
                 print("HEY! BOTH CURVE AND LABEL ARE REQUIRED!")
+                return
             }
             
             
@@ -216,7 +217,7 @@ public class KNNDTW: NSObject {
 
 //input type
 public struct knn_curve_label_pair {
-    let curve: [Float]
+    var curve: [Float]
     let label: String
 }
 
