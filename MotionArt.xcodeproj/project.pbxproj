@@ -47,6 +47,7 @@
 		7C9E335F2075B88F002B5F85 /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C9E33582075B88E002B5F85 /* Error.swift */; };
 		7C9E33602075B88F002B5F85 /* Structure.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C9E33592075B88E002B5F85 /* Structure.swift */; };
 		7C9E33612075B88F002B5F85 /* Dataset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C9E335A2075B88E002B5F85 /* Dataset.swift */; };
+		7C9E33632075BB08002B5F85 /* KNNDTW.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C9E33622075BB08002B5F85 /* KNNDTW.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -116,6 +117,7 @@
 		7C9E33582075B88E002B5F85 /* Error.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Error.swift; sourceTree = "<group>"; };
 		7C9E33592075B88E002B5F85 /* Structure.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Structure.swift; sourceTree = "<group>"; };
 		7C9E335A2075B88E002B5F85 /* Dataset.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Dataset.swift; sourceTree = "<group>"; };
+		7C9E33622075BB08002B5F85 /* KNNDTW.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KNNDTW.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -142,6 +144,7 @@
 				7C9E33532075B882002B5F85 /* NeuralNet */,
 				7C6B1137206EB98300D7E590 /* MLConverter.swift */,
 				7C9E33452075B552002B5F85 /* AudioRecognition.swift */,
+				7C9E33622075BB08002B5F85 /* KNNDTW.swift */,
 			);
 			path = ML;
 			sourceTree = "<group>";
@@ -351,6 +354,7 @@
 				7C7173FA205FFDDE004830C0 /* Constants.swift in Sources */,
 				7C9E33602075B88F002B5F85 /* Structure.swift in Sources */,
 				7C6B1133206D62F400D7E590 /* NewVisualizationViewController.swift in Sources */,
+				7C9E33632075BB08002B5F85 /* KNNDTW.swift in Sources */,
 				7C9E335D2075B88F002B5F85 /* NeuralNet.swift in Sources */,
 				7C6B1135206D6A4400D7E590 /* ARVisualizationManager.swift in Sources */,
 				7C9E33612075B88F002B5F85 /* Dataset.swift in Sources */,

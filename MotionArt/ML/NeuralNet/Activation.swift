@@ -291,26 +291,30 @@ public extension NeuralNet {
             ///   - rows: The number of rows in the matrix (number of output sets in the batch).
             ///   - cols: The number of columns in the matrix (number of outputs per set).
             public func calculateErrorGradient(real: [Float], target: [Float], result: inout [Float], rows: Int, cols: Int) {
-                switch self {
-                case .linear:
-                    // TODO
-                    break
-                case .rectifiedLinear:
-                    // TODO
-                    break
-                case .hyperbolicTangent:
-                    // TODO
-                    break
-                case .sigmoid:
-                    result = zip(real, target).map{(-$0 * (1 - $0) * ($1 - $0))}
-                case .softmax:
-                    vDSP_vsub(target, 1,
-                              real, 1,
-                              &result, 1,
-                              vDSP_Length(real.count))
-                case .custom(_, let gradient):
-                    gradient(real, target, &result, rows, cols)
-                }
+//                switch self {
+//                case .linear:
+//                    // TODO
+//                    break
+//                case .rectifiedLinear:
+//                    // TODO
+//                    break
+//                case .hyperbolicTangent:
+//                    // TODO
+//                    break
+//                case .sigmoid:
+//                    
+//                    result = zip(real, target).map({ (value) -> Float in
+//                        return -1*value.0 * (1 - value.0) * (value.1 - value.0)
+//                    })
+//                //map{(-$0 * (1 - $0) * ($1 - $0))}
+//                case .softmax:
+//                    vDSP_vsub(target, 1,
+//                              real, 1,
+//                              &result, 1,
+//                              vDSP_Length(real.count))
+//                case .custom(_, let gradient):
+//                    gradient(real, target, &result, rows, cols)
+//                }
             }
             
         }
