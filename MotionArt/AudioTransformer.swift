@@ -70,7 +70,7 @@ class AudioTransformer: NSObject {
                              bufferSize: size,
                              format: mixerNode.outputFormat(forBus: 0)) { (buffer, time) in self.fftTransform(buffer: buffer)
         }
-
+        
         audioEngine.prepare()
         do
         {
@@ -101,7 +101,7 @@ class AudioTransformer: NSObject {
         
         // This is the value the web app uses
         let windowSize = bufferSizePOT
-  
+        
         var transferBuffer = [Float](repeating: 0, count: windowSize)
         var window = [Float](repeating: 0, count: windowSize)
         
@@ -130,7 +130,7 @@ class AudioTransformer: NSObject {
         delegate.dealWithFFTMagnitudes(magnitudes: normalizedMagnitudes)
         
         #if DEBUG
-            //os_log("%@: FFT magnitudes: %@", self.description,  normalizedMagnitudes)
+        //os_log("%@: FFT magnitudes: %@", self.description,  normalizedMagnitudes)
         #endif
         
         //let buffer = Buffer(elements: normalizedMagnitudes)
@@ -140,61 +140,66 @@ class AudioTransformer: NSObject {
         //return buffer.elements
     }
     
-    
-    func computeMFCC(audioFilePath:URL, completion:@escaping ([Float]) -> Void){
+    private func computeMFCC(url:URL) -> [Float]{
         var dataStore:[Float] = [Float]()
-        export(audioFilePath) { (url, error) in
-            guard error == nil else {
-                print(error.debugDescription)
-                return
+        let hop_size : uint_t = uint_t(Constants.NUM_NODES)
+        let a = new_fvec(hop_size)
+        let b = new_aubio_source(url.path, 0, hop_size)
+        
+        let win_s:uint_t = uint_t(Constants.NUM_NODES)
+        let n_filters:uint_t = 20
+        let n_coefs:uint_t = 26//13
+        let samplerate:uint_t = 16000
+        let iin = new_cvec(win_s)
+        let oout = new_fvec(n_coefs)
+        
+        let c = new_aubio_mfcc(win_s, n_filters, n_coefs, samplerate);
+        
+        var read: uint_t = 0
+        var total_frames : uint_t = 0
+        
+        while (true) {
+            aubio_source_do(b, a, &read)
+            aubio_mfcc_do(c, iin, oout)
+            
+            //print(oout as Any)
+            
+            total_frames += read
+            
+            if (read < hop_size) { break }
+        }
+        print("read", total_frames, "frames at", aubio_source_get_samplerate(b), "Hz")
+        
+        del_aubio_source(b)
+        del_fvec(a)
+        
+        del_aubio_mfcc(c)
+        
+        if let data = fvec_get_data(oout) {
+            for j in 0..<Int(n_coefs) {
+                dataStore.append(data[j])
             }
-            
-            guard let url = url else {
-                return
-            }
-            
-            print("URL: \(url.absoluteString)")
-            
-            let hop_size : uint_t = uint_t(Constants.NUM_NODES)
-            let a = new_fvec(hop_size)
-            let b = new_aubio_source(url.path, 0, hop_size)
-            
-            let win_s:uint_t = uint_t(Constants.NUM_NODES)
-            let n_filters:uint_t = 20
-            let n_coefs:uint_t = 26//13
-            let samplerate:uint_t = 16000
-            let iin = new_cvec(win_s)
-            let oout = new_fvec(n_coefs)
-            
-            let c = new_aubio_mfcc(win_s, n_filters, n_coefs, samplerate);
-            
-            var read: uint_t = 0
-            var total_frames : uint_t = 0
-            
-            while (true) {
-                aubio_source_do(b, a, &read)
-                aubio_mfcc_do(c, iin, oout)
-                
-                //print(oout as Any)
-                
-                total_frames += read
-                
-                if (read < hop_size) { break }
-            }
-            print("read", total_frames, "frames at", aubio_source_get_samplerate(b), "Hz")
-            
-            del_aubio_source(b)
-            del_fvec(a)
-            
-            del_aubio_mfcc(c)
-            
-            if let data = fvec_get_data(oout) {
-                for j in 0..<Int(n_coefs) {
-                    dataStore.append(data[j])
+        }
+        return dataStore
+    }
+    
+    func computeMFCC(assetURL: URL?, audioFilePath:URL?, completion:@escaping ([Float]) -> Void){
+        if let assetURL = assetURL {
+            export(assetURL) { (url, error) in
+                guard error == nil else {
+                    print(error.debugDescription)
+                    return
                 }
+                guard let url = url else {
+                    return
+                }
+                print("URL: \(url.absoluteString)")
+                let dataStore = self.computeMFCC(url: url)
+                completion(dataStore)
             }
-            
-            print(dataStore)
+        }
+        else if let url = audioFilePath{
+            let dataStore = self.computeMFCC(url: url)
             completion(dataStore)
         }
     }

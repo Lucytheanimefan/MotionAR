@@ -24,7 +24,14 @@ public class KNNDTW: NSObject {
         self.max_warping_window = max_warp // not implemented
     }
     
-    
+    public func exportParameters(){
+        print(self.unique_labels)
+        print(self.curve_label_pairs)
+        self.curve_label_pairs.forEach { (pair) in
+            print(pair.label)
+            print(pair.curve)
+        }
+    }
     
     public func train(data_sets: [knn_curve_label_pair]) {
         

@@ -26,7 +26,7 @@ class MLConverter: NSObject {
         training_samples.append(knn_curve_label_pair(curve: curve, label: label))
     }
     
-    func appendToExistinSample(curve:[Float], label:String){
+    func appendToExistingSample(curve:[Float], label:String){
         let i = training_samples.index { (label_pair) -> Bool in
             return (label_pair.label == label)
         }
@@ -34,8 +34,13 @@ class MLConverter: NSObject {
 //            return (label_pair.label == label)
 //        }
         
-        training_samples[i!].curve.append(contentsOf: curve)
-
+        if (i == nil){
+            training_samples.append(knn_curve_label_pair(curve: curve, label: label))
+        }
+        else {
+            training_samples[i!].curve.append(contentsOf: curve)
+        }
+        
     }
     
     func train(){
@@ -43,6 +48,10 @@ class MLConverter: NSObject {
         knn_dtw.train(data_sets: training_samples)
     }
     
+    func export(){
+        print("TRAINING SAMPLES:")
+        print(self.training_samples)
+    }
     
     func predict()->knn_certainty_label_pair{
     //get a prediction

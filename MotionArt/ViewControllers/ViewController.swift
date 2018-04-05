@@ -23,26 +23,51 @@ class ViewController: UIViewController {
     
     var selectedIndex:Int?
     
+    let mlConverter = MLConverter()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         ARVisualizationManager.shared.delegate = self
         ARVisualizationManager.shared.recreateVisualizations()
         
-        // Testing
-//        let audioFiles = ["rock.00000"]//["Shelter", "Sakura", "shigatsu_short"]
-//        let extensions = ["wav"]
-//
-//        var mydata = [String:Any]()
-//        for (i, file) in audioFiles.enumerated(){
-//            let url = Bundle.main.url(forResource: file, withExtension: extensions[i])
-//            let data = AudioTransformer.shared.computeMFCC(audioFilePath: url)
-//            mydata[file] = data
-//        }
-//
-//        print("------")
-//        print(mydata)
+        // Train
+        let genres = ["blues", "classical","country","disco","hiphop","jazz","metal","pop",
+                      "reggae","rock"]
+        let fileManager = FileManager.default
+    
+        
+        let myGroup = DispatchGroup()
+        for (i, genre) in genres.enumerated(){
+            print(genre)
+            guard let enumerator:FileManager.DirectoryEnumerator = fileManager.enumerator(atPath: "/Users/lucyzhang/Desktop/genres-project/genres/" + genre) else {
+                return
+            }
+            
+            while let element = enumerator.nextObject() as? String {
+                if element.hasSuffix("wav") { // checks the extension
+                    //print(element)
+                    let url = URL(fileURLWithPath: "/Users/lucyzhang/Desktop/genres-project/genres/" + genre + "/" + element)
+                    myGroup.enter()
+                    AudioTransformer.shared.computeMFCC(assetURL: nil, audioFilePath: url) { (mfcc) in
+                        //self.mlConverter.appendToExistingSample(curve: mfcc, label: genre)
+                        self.mlConverter.appendSample(curve: mfcc, label: genre)
+                        myGroup.leave()
+                    }
+                }
+            }
+        }
+        myGroup.notify(queue: .main) {
+            //if (i == genres.count - 1) {
+                print("Finished all requests.")
+                print("TRAINING NOW")
+                self.mlConverter.train()
+                
+                self.mlConverter.export()
+            //}
+        }
         
 
+        
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -107,11 +132,10 @@ extension ViewController: MPMediaPickerControllerDelegate{
         if let assetURL = musicItem.value(forKey: MPMediaItemPropertyAssetURL) as? URL
         {
             self.musicAssetURL = assetURL
-//            let url = Bundle.main.url(forResource: "shigatsu_short", withExtension: "wav")
-            AudioTransformer.shared.computeMFCC(audioFilePath: assetURL) { (mfcc) in
+            AudioTransformer.shared.computeMFCC(assetURL: assetURL, audioFilePath: nil, completion: { (mfcc) in
                 print("GOT MFCC DATA!")
                 print(mfcc)
-            }
+            })
         }
 
 
