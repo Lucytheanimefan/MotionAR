@@ -53,6 +53,12 @@
 		7C9E337020760754002B5F85 /* MLConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C6B1137206EB98300D7E590 /* MLConverter.swift */; };
 		7C9E337220760856002B5F85 /* aubio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7C9E337120760856002B5F85 /* aubio.framework */; };
 		7C9E3374207610B1002B5F85 /* shigatsu_short.wav in Resources */ = {isa = PBXBuildFile; fileRef = 7C9E3373207610B1002B5F85 /* shigatsu_short.wav */; };
+		7C9E337520764DE6002B5F85 /* AudioTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C6B112A206BF49300D7E590 /* AudioTransformer.swift */; };
+		7C9E337720764EE0002B5F85 /* Shelter.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 7C9E337620764EE0002B5F85 /* Shelter.mp3 */; };
+		7C9E337920764EF3002B5F85 /* Sakura.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 7C9E337820764EF3002B5F85 /* Sakura.mp3 */; };
+		7C9E337A20764F98002B5F85 /* aubio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7C9E337120760856002B5F85 /* aubio.framework */; };
+		7C9E337B20764FF2002B5F85 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C7173F9205FFDDD004830C0 /* Constants.swift */; };
+		7C9E337D20765437002B5F85 /* rock.00000.wav in Resources */ = {isa = PBXBuildFile; fileRef = 7C9E337C20765437002B5F85 /* rock.00000.wav */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -136,6 +142,9 @@
 		7C9E336A207606C7002B5F85 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		7C9E337120760856002B5F85 /* aubio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = aubio.framework; path = "aubio-0.4.5.iosuniversal_framework/aubio.framework"; sourceTree = "<group>"; };
 		7C9E3373207610B1002B5F85 /* shigatsu_short.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = shigatsu_short.wav; sourceTree = "<group>"; };
+		7C9E337620764EE0002B5F85 /* Shelter.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = Shelter.mp3; path = "../../../Music/iTunes/iTunes Media/Music/Porter Robinson/Unknown Album/Shelter.mp3"; sourceTree = "<group>"; };
+		7C9E337820764EF3002B5F85 /* Sakura.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = Sakura.mp3; path = "../../../Music/iTunes/iTunes Media/Music/Lions Heart Productions/Unknown Album/Sakura.mp3"; sourceTree = "<group>"; };
+		7C9E337C20765437002B5F85 /* rock.00000.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = rock.00000.wav; path = "../../../Desktop/genres-project/genres/rock/rock.00000.wav"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -158,6 +167,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7C9E337A20764F98002B5F85 /* aubio.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -210,6 +220,9 @@
 		7C7173D6205C236B004830C0 /* MotionArt */ = {
 			isa = PBXGroup;
 			children = (
+				7C9E337C20765437002B5F85 /* rock.00000.wav */,
+				7C9E337620764EE0002B5F85 /* Shelter.mp3 */,
+				7C9E337820764EF3002B5F85 /* Sakura.mp3 */,
 				7C9E3373207610B1002B5F85 /* shigatsu_short.wav */,
 				7C6B1139206EBDC700D7E590 /* ViewControllers */,
 				7C6B1136206EB96A00D7E590 /* ML */,
@@ -379,12 +392,15 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7C9E337D20765437002B5F85 /* rock.00000.wav in Resources */,
 				7C7173E2205C236B004830C0 /* LaunchScreen.storyboard in Resources */,
 				7C9E3374207610B1002B5F85 /* shigatsu_short.wav in Resources */,
 				7C71740020605308004830C0 /* Collision.scnp in Resources */,
 				7C7173FD2060529D004830C0 /* spark.png in Resources */,
 				7C7173DF205C236B004830C0 /* Assets.xcassets in Resources */,
 				7C7173DD205C236B004830C0 /* Main.storyboard in Resources */,
+				7C9E337720764EE0002B5F85 /* Shelter.mp3 in Resources */,
+				7C9E337920764EF3002B5F85 /* Sakura.mp3 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -437,8 +453,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7C9E337B20764FF2002B5F85 /* Constants.swift in Sources */,
 				7C9E336B207606C7002B5F85 /* main.swift in Sources */,
 				7C9E336F207606EF002B5F85 /* KNNDTW.swift in Sources */,
+				7C9E337520764DE6002B5F85 /* AudioTransformer.swift in Sources */,
 				7C9E337020760754002B5F85 /* MLConverter.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -691,6 +709,10 @@
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 65ZN6CM2H7;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/aubio-0.4.5.iosuniversal_framework",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
@@ -707,6 +729,10 @@
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 65ZN6CM2H7;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/aubio-0.4.5.iosuniversal_framework",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;

@@ -18,6 +18,10 @@ protocol AudioTransformerDelegate{
 
 class AudioTransformer: NSObject {
     
+    enum ExportError: Error {
+        case unableToCreateExporter
+    }
+    
     var audioEngine = AVAudioEngine()
     var audioNode = AVAudioPlayerNode()
     
@@ -137,63 +141,95 @@ class AudioTransformer: NSObject {
     }
     
     
-    func computeMFCC(audioFilePath:URL?) -> [Float]{
-        print(audioFilePath!.absoluteString)
-        
+    func computeMFCC(audioFilePath:URL, completion:@escaping ([Float]) -> Void){
         var dataStore:[Float] = [Float]()
-//        let dir = NSSearchPathForDirectoriesInDomains(FileManager.SearchPathDirectory.documentDirectory, FileManager.SearchPathDomainMask.allDomainsMask, true).first
-//        let path = NSURL(fileURLWithPath: dir!).appendingPathComponent(audioFilePath.relativeString)
-        
-        guard let audioPath = audioFilePath else {
-            return dataStore
-        }
-        
-        print("File path: \(audioPath)")
-        
-        
-        let hop_size : uint_t = uint_t(Constants.NUM_NODES)
-        let a = new_fvec(hop_size)
-        let b = new_aubio_source(audioPath.path, 0, hop_size)
-        
-        let win_s:uint_t = uint_t(Constants.NUM_NODES)
-        let n_filters:uint_t = 20
-        let n_coefs:uint_t = 13
-        let samplerate:uint_t = 16000
-        let iin = new_cvec(win_s)
-        let oout = new_fvec(n_coefs)
-        
-        let c = new_aubio_mfcc(win_s, n_filters, n_coefs, samplerate);
-        
-        var read: uint_t = 0
-        var total_frames : uint_t = 0
-        
-        while (true) {
-            aubio_source_do(b, a, &read)
-            aubio_mfcc_do(c, iin, oout)
-            
-            print(oout as Any)
-            
-            total_frames += read
-            
-            if (read < hop_size) { break }
-        }
-        print("read", total_frames, "frames at", aubio_source_get_samplerate(b), "Hz")
-        
-        del_aubio_source(b)
-        del_fvec(a)
-        
-        del_aubio_mfcc(c)
-        
-        if let data = fvec_get_data(oout) {
-            for j in 0..<Int(n_coefs) {
-                dataStore.append(data[j])
+        export(audioFilePath) { (url, error) in
+            guard error == nil else {
+                print(error.debugDescription)
+                return
             }
+            
+            guard let url = url else {
+                return
+            }
+            
+            print("URL: \(url.absoluteString)")
+            
+            let hop_size : uint_t = uint_t(Constants.NUM_NODES)
+            let a = new_fvec(hop_size)
+            let b = new_aubio_source(url.path, 0, hop_size)
+            
+            let win_s:uint_t = uint_t(Constants.NUM_NODES)
+            let n_filters:uint_t = 20
+            let n_coefs:uint_t = 26//13
+            let samplerate:uint_t = 16000
+            let iin = new_cvec(win_s)
+            let oout = new_fvec(n_coefs)
+            
+            let c = new_aubio_mfcc(win_s, n_filters, n_coefs, samplerate);
+            
+            var read: uint_t = 0
+            var total_frames : uint_t = 0
+            
+            while (true) {
+                aubio_source_do(b, a, &read)
+                aubio_mfcc_do(c, iin, oout)
+                
+                //print(oout as Any)
+                
+                total_frames += read
+                
+                if (read < hop_size) { break }
+            }
+            print("read", total_frames, "frames at", aubio_source_get_samplerate(b), "Hz")
+            
+            del_aubio_source(b)
+            del_fvec(a)
+            
+            del_aubio_mfcc(c)
+            
+            if let data = fvec_get_data(oout) {
+                for j in 0..<Int(n_coefs) {
+                    dataStore.append(data[j])
+                }
+            }
+            
+            print(dataStore)
+            completion(dataStore)
         }
-    
-        print(dataStore)
-        return dataStore
     }
     
+    /// Export MPMediaItem to temporary file.
+    ///
+    /// - Parameters:
+    ///   - assetURL: The `assetURL` of the `MPMediaItem`.
+    ///   - completionHandler: Closure to be called when the export is done. The parameters are a boolean `success`, the `URL` of the temporary file, and an optional `Error` if there was any problem. The parameters of the closure are:
+    ///
+    ///   - fileURL: The `URL` of the temporary file created for the exported results.
+    ///   - error: The `Error`, if any, of the asynchronous export process.
+    
+    func export(_ assetURL: URL, completionHandler: @escaping (_ fileURL: URL?, _ error: Error?) -> ()) {
+        let asset = AVURLAsset(url: assetURL)
+        guard let exporter = AVAssetExportSession(asset: asset, presetName: AVAssetExportPresetAppleM4A) else {
+            completionHandler(nil, ExportError.unableToCreateExporter)
+            return
+        }
+        
+        let fileURL = URL(fileURLWithPath: NSTemporaryDirectory())
+            .appendingPathComponent(NSUUID().uuidString)
+            .appendingPathExtension("m4a")
+        
+        exporter.outputURL = fileURL
+        exporter.outputFileType = AVFileType(rawValue: "com.apple.m4a-audio")
+        
+        exporter.exportAsynchronously {
+            if exporter.status == .completed {
+                completionHandler(fileURL, nil)
+            } else {
+                completionHandler(nil, exporter.error)
+            }
+        }
+    }
     
     func sqrtq(_ x: [Float]) -> [Float] {
         var results = [Float](repeating: 0.0, count: x.count)

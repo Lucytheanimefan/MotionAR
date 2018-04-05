@@ -27,6 +27,22 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         ARVisualizationManager.shared.delegate = self
         ARVisualizationManager.shared.recreateVisualizations()
+        
+        // Testing
+//        let audioFiles = ["rock.00000"]//["Shelter", "Sakura", "shigatsu_short"]
+//        let extensions = ["wav"]
+//
+//        var mydata = [String:Any]()
+//        for (i, file) in audioFiles.enumerated(){
+//            let url = Bundle.main.url(forResource: file, withExtension: extensions[i])
+//            let data = AudioTransformer.shared.computeMFCC(audioFilePath: url)
+//            mydata[file] = data
+//        }
+//
+//        print("------")
+//        print(mydata)
+        
+
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -91,8 +107,11 @@ extension ViewController: MPMediaPickerControllerDelegate{
         if let assetURL = musicItem.value(forKey: MPMediaItemPropertyAssetURL) as? URL
         {
             self.musicAssetURL = assetURL
-            let url = Bundle.main.url(forResource: "shigatsu_short", withExtension: "wav")
-            AudioTransformer.shared.computeMFCC(audioFilePath: url)
+//            let url = Bundle.main.url(forResource: "shigatsu_short", withExtension: "wav")
+            AudioTransformer.shared.computeMFCC(audioFilePath: assetURL) { (mfcc) in
+                print("GOT MFCC DATA!")
+                print(mfcc)
+            }
         }
 
 
