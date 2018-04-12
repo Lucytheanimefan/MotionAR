@@ -53,9 +53,9 @@ class MLConverter: NSObject {
         print(self.training_samples)
     }
     
-    func predict()->knn_certainty_label_pair{
+    func predict(data:[Float])->knn_certainty_label_pair{
     //get a prediction
-        let prediction: knn_certainty_label_pair = knn_dtw.predict(curve_to_test: [1.0, 2, 3, 5, 6])
+        let prediction: knn_certainty_label_pair = knn_dtw.predict(curve_to_test: data)
         print("predicted " + prediction.label, "with ", prediction.probability*100,"% certainty")
         return prediction
     }

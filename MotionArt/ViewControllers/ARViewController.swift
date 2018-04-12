@@ -10,6 +10,7 @@ import UIKit
 import ReplayKit
 import ARKit
 import CoreMotion
+import QuartzCore
 
 //The green axis represents Y (take a mental note, Y points up)
 //The red axis represents X
@@ -184,16 +185,21 @@ class ARViewController: UIViewController {
         if (ARVizSettings.name.lowercased() == "anime"){
             box.setImage(image: #imageLiteral(resourceName: "penguinCucumber"))
         }
+        
+        box.firstMaterial?.fillMode = .lines
+        
         let boxNode = SCNNode(geometry: box)
         boxNode.position = SCNVector3(0, 0, -0.2)
         if let name = name{
             boxNode.name = name
         }
+
         return boxNode
     }
     
     func createSphere()->SCNNode{
         let sphere = SCNSphere(radius: 0.1)
+        sphere.firstMaterial?.fillMode = .lines
         let node = SCNNode(geometry: sphere)
         return node
     }
