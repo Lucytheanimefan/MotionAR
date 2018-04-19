@@ -26,8 +26,10 @@ class ARVisualization: NSObject {
     
     var musicAssetURL:URL? = nil
     
+    var gamify:Bool = false;
+    
     lazy var settings:[String:Any] = {
-        return ["bounds":self.bounds, "increment":self.increment, "num_nodes":self.num_nodes, "frame_count":frame_count, "num_rings":self.num_rings, "ring_separation":self.ring_separation, "box_dimensions":self.box_dimensions, "musicAssetURL":self.musicAssetURL, "name":self.name, "ring_radius": ring_radius]
+        return ["bounds":self.bounds, "increment":self.increment, "num_nodes":self.num_nodes, "frame_count":frame_count, "num_rings":self.num_rings, "ring_separation":self.ring_separation, "box_dimensions":self.box_dimensions, "musicAssetURL":self.musicAssetURL, "name":self.name, "ring_radius": self.ring_radius, "gamify": self.gamify]
     }()
     
 //    init() {

@@ -95,3 +95,11 @@ extension matrix_float4x4 {
         return SCNVector3(columns.3.x, columns.3.y, columns.3.z)
     }
 }
+
+extension UITextView {
+    func simple_scrollToBottom() {
+        let textCount: Int = text.count
+        guard textCount >= 1 else { return }
+        scrollRangeToVisible(NSMakeRange(textCount - 1, 1))
+    }
+}

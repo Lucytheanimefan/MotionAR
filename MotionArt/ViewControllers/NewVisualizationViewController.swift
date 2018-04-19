@@ -29,6 +29,8 @@ class NewVisualizationViewController: UIViewController {
     @IBOutlet weak var ringSepSlider: UISlider!
     
     @IBOutlet weak var ringRadiusSlider: UISlider!
+    
+    @IBOutlet weak var gamifySwitch: UISwitch!
     var existingCellIndex:Int?
     
     override func viewDidLoad() {
@@ -106,6 +108,10 @@ class NewVisualizationViewController: UIViewController {
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         self.view.endEditing(true)
+    }
+    
+    @IBAction func switchAction(_ sender: UISwitch) {
+        visualization.gamify = sender.isOn
     }
     
     @IBAction func sliderValueChanged(_ sender: UISlider) {

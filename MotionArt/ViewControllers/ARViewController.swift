@@ -46,9 +46,30 @@ class ARViewController: UIViewController {
     
     var currentPosition:SCNVector3!
     
-    var currentActivity:String!
+    private var _currentActivity:String! = ""
+    var currentActivity:String{
+        set{
+            self._currentActivity = newValue
+            DispatchQueue.main.async {
+                self.debugView.text.append(self.timestamp + ": " + newValue + "\n") //newValue
+                self.debugView.simple_scrollToBottom()
+            }
+        }
+        get{
+            return self._currentActivity
+        }
+    }
     
     var mfcc:[Float]!
+    
+    lazy var timestamp:String = {
+        let now = Date()
+        let formatter = DateFormatter()
+        formatter.timeZone = TimeZone.current
+        formatter.dateFormat = "HH:mm"
+        let dateString = formatter.string(from: now)
+        return dateString
+    }()
     
     @IBOutlet weak var debugView: UITextView!
     
@@ -65,13 +86,13 @@ class ARViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        print(ARVizSettings.settings)
+        //print(ARVizSettings.settings)
         self.startSession()
         self.createLight()
         
         self.createRings(numRings: /*Constants.NUM_RINGS*/ARVizSettings.num_rings, separationDistance: /*Constants.RING_SEPARATION*/ARVizSettings.ring_separation)
         self.beginMotionData()
-        //self.beginMotionCategorization()
+        self.beginMotionCategorization()
     }
     
     override func didReceiveMemoryWarning() {
@@ -101,7 +122,6 @@ class ARViewController: UIViewController {
         
         debugView.frame = CGRect(x: frame.origin.x, y: frame.origin.y, width: frame.width, height: (frame.height < 120) ? 120 : 0)
         
-        sender.title = (frame.height > 0) ? "Expand info" : "Collapse info"
     }
     
     
@@ -109,10 +129,11 @@ class ARViewController: UIViewController {
     func setupSceneView(){
         self.sceneView.scene = SCNScene()
         self.sceneView.delegate = self
-        #if DEBUG
+//        #if DEBUG
             self.sceneView.showsStatistics = true
-            self.sceneView.debugOptions = ARSCNDebugOptions.showWorldOrigin
-        #endif
+//            self.sceneView.debugOptions = ARSCNDebugOptions.showWorldOrigin
+//        #endif
+        self.sceneView.debugOptions.insert(.showWireframe)
         self.sceneView.scene.physicsWorld.contactDelegate = self
         
     }
@@ -200,7 +221,7 @@ class ARViewController: UIViewController {
             box.setImage(image: #imageLiteral(resourceName: "penguinCucumber"))
         }
         
-        box.firstMaterial?.fillMode = .lines
+        //box.firstMaterial?.fillMode = .lines
         
         let boxNode = SCNNode(geometry: box)
         boxNode.position = SCNVector3(0, 0, -0.2)
@@ -323,38 +344,40 @@ class ARViewController: UIViewController {
                 return
             }
             if (activity.walking){
-                guard self.currentActivity != "walking" else {
+                guard self.currentActivity != "Walking" else {
                     return
                 }
-                self.currentActivity = "walking"
-                
-                for (i, ring) in self.ringNodes.enumerated(){
-                    for (j, node) in ring.enumerated(){
-                        //if (i == 0 || i == self.ringNodes.count - 1){
-                        let xN = Float(cos(Float((j+1)/2) * self.incrementAngle())) * Constants.RADIUS //TODO: change radius
-                        let zN = Float(sin(Float((j+1)/2) * self.incrementAngle())) * Constants.RADIUS
-                        let yN = Float(i) * self.ARVizSettings.ring_separation//Float((i+1))*self.ARVizSettings.ring_separation
-                        node.position = SCNVector3Make(xN, yN, zN)
-                        //}
-                    }
-                }
-            }
-            else if (activity.stationary){
-                guard self.currentActivity != "stationary" else {
-                    return
-                }
-                print("Stationary!")
-                self.currentActivity = "stationary"
+                self.currentActivity = "Walking"
                 
                 // Make it a dome/sphere thing!
                 for (i, ring) in self.ringNodes.enumerated(){
                     for (j, node) in ring.enumerated(){
-                        //if (i == 0 || i == self.ringNodes.count - 1){
-                        let xN = Float(cos(Float((j+1)/2) * self.incrementAngle())) * Constants.RADIUS/2 //TODO: change radius
-                        let zN = Float(sin(Float((j+1)/2) * self.incrementAngle())) * Constants.RADIUS/2
-                        let yN = Float(i) * self.ARVizSettings.ring_separation
-                        node.position = SCNVector3Make(xN, yN, zN)
-                        //}
+                        if (i == 0 || i == self.ringNodes.count - 1){
+                            let xN = Float(cos(Float((j+1)/2) * self.incrementAngle())) * Constants.RADIUS //TODO: change radius
+                            let zN = Float(sin(Float((j+1)/2) * self.incrementAngle())) * Constants.RADIUS
+                            let yN = Float(i) * self.ARVizSettings.ring_separation//Float((i+1))*self.ARVizSettings.ring_separation
+                            node.position = SCNVector3Make(xN, yN, zN)
+                        }
+                    }
+                }
+            }
+            else if (activity.stationary){
+                guard self.currentActivity != "Stationary" else {
+                    return
+                }
+                print("Stationary!")
+                self.currentActivity = "Stationary"
+                
+                // Make it a dome/sphere thing!
+                
+                for (i, ring) in self.ringNodes.enumerated(){
+                    for (j, node) in ring.enumerated(){
+                        if (i == 0 || i == self.ringNodes.count - 1){
+                            let xN = Float(cos(Float((j+1)/2) * self.incrementAngle())) * Constants.RADIUS/2 //TODO: change radius
+                            let zN = Float(sin(Float((j+1)/2) * self.incrementAngle())) * Constants.RADIUS/2
+                            let yN = Float(i) * self.ARVizSettings.ring_separation
+                            node.position = SCNVector3Make(xN, yN, zN)
+                        }
                     }
                 }
             }
@@ -362,7 +385,7 @@ class ARViewController: UIViewController {
                 guard self.currentActivity != "running" else {
                     return
                 }
-                self.currentActivity = "running"
+                self.currentActivity = "Running"
             }
         }
     }
@@ -415,6 +438,19 @@ extension ARViewController:RPPreviewViewControllerDelegate{
 }
 
 extension ARViewController:ARSessionDelegate{
+    
+    func pushNodeOutward(node:SCNNode, signValues:SCNVector3, physics:Bool){
+        let rand = CGFloat(Float(arc4random()) / Float(UINT32_MAX))
+        let action = SCNAction.move(by: SCNVector3Make(signValues.x * ARVizSettings.increment * Float(rand) , 0, signValues.z * ARVizSettings.increment * Float(rand) ), duration: 1.5 )
+        action.timingMode = .easeInEaseOut
+        
+        node.runAction(action, completionHandler: {
+            if (physics){
+                node.physicsBody = SCNPhysicsBody(type: .dynamic, shape: nil)
+            }
+        })
+    }
+    
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
         self.currentPosition = frame.camera.transform.position()
         //print("Current position: \(currentPosition)")
@@ -429,28 +465,17 @@ extension ARViewController:ARSessionDelegate{
                 
                 // Move the node out a bit if I collide with it
                 let signValues = nodePosition.signValue()
-                
-                // Create collision nodes
-                let rand = CGFloat(Float(arc4random()) / Float(UINT32_MAX))
-                let action = SCNAction.move(by: SCNVector3Make(signValues.x * ARVizSettings.increment * Float(rand) , 0, signValues.z * ARVizSettings.increment * Float(rand) ), duration: 1.5 )
-                action.timingMode = .easeInEaseOut
-                
-                node.runAction(action, completionHandler: {
-                    node.physicsBody = SCNPhysicsBody(type: .dynamic, shape: nil)
-                })
-                
-//                if let collisionParticleSystem = SCNParticleSystem(named: "Collision", inDirectory: nil){
-//                    node.addParticleSystem(collisionParticleSystem)
-//
-//                    let rand = CGFloat(Float(arc4random()) / Float(UINT32_MAX))
-//                    let action = SCNAction.move(by: SCNVector3Make(signValues.x * ARVizSettings.increment * Float(rand) , 0, signValues.z * ARVizSettings.increment * Float(rand) ), duration: 1.5 )
-//                    action.timingMode = .easeInEaseOut
-//
-//                    node.runAction(action, completionHandler: {
-//                        node.physicsBody = SCNPhysicsBody(type: .dynamic, shape: nil)
-//                    })
-//                }
-                
+
+                if (ARVizSettings.gamify){
+                    if let collisionParticleSystem = SCNParticleSystem(named: "Collision", inDirectory: nil){
+                        node.addParticleSystem(collisionParticleSystem)
+                        pushNodeOutward(node: node, signValues: signValues, physics: true)
+                    }
+                }
+                else
+                {
+                    pushNodeOutward(node: node, signValues: signValues, physics: false)
+                }
             }
         }
     }
