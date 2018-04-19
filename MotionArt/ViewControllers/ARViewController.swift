@@ -50,6 +50,9 @@ class ARViewController: UIViewController {
     
     var mfcc:[Float]!
     
+    @IBOutlet weak var debugView: UITextView!
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupSceneView()
@@ -92,6 +95,15 @@ class ARViewController: UIViewController {
             }
         }
     }
+    
+    @IBAction func debugViewAction(_ sender: UIBarButtonItem) {
+        let frame = debugView.frame
+        
+        debugView.frame = CGRect(x: frame.origin.x, y: frame.origin.y, width: frame.width, height: (frame.height < 120) ? 120 : 0)
+        
+        sender.title = (frame.height > 0) ? "Expand info" : "Collapse info"
+    }
+    
     
     // MARK: Scene setup
     func setupSceneView(){

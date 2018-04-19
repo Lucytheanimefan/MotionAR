@@ -18,17 +18,20 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <arscnView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Nca-me-p0X">
+                            <arscnView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Nca-me-p0X">
                                 <rect key="frame" x="0.0" y="44" width="375" height="579"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             </arscnView>
-                            <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="COE-DS-vrG">
+                            <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="COE-DS-vrG">
                                 <rect key="frame" x="0.0" y="623" width="375" height="44"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                 <items>
                                     <barButtonItem systemItem="play" id="c2N-Sl-3TX">
                                         <connections>
                                             <action selector="startRecording:" destination="BYZ-38-t0r" id="1iF-wU-dXJ"/>
+                                        </connections>
+                                    </barButtonItem>
+                                    <barButtonItem title="Info" id="jXK-cq-cTQ">
+                                        <connections>
+                                            <action selector="debugViewAction:" destination="BYZ-38-t0r" id="BPu-3N-lna"/>
                                         </connections>
                                     </barButtonItem>
                                     <barButtonItem style="plain" systemItem="flexibleSpace" id="bcX-nz-M7a"/>
@@ -39,9 +42,8 @@
                                     </barButtonItem>
                                 </items>
                             </toolbar>
-                            <navigationBar contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="CxX-XH-Ec9">
+                            <navigationBar contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="CxX-XH-Ec9">
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                                 <items>
                                     <navigationItem id="qVy-KH-BhD">
                                         <barButtonItem key="leftBarButtonItem" systemItem="cancel" id="kw8-pc-WgW">
@@ -52,11 +54,36 @@
                                     </navigationItem>
                                 </items>
                             </navigationBar>
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" userInteractionEnabled="NO" contentMode="scaleToFill" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="anH-Rz-qoM">
+                                <rect key="frame" x="0.0" y="503" width="375" height="120"/>
+                                <color key="backgroundColor" red="0.99999600649999998" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                            </textView>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="anH-Rz-qoM" firstAttribute="top" secondItem="CxX-XH-Ec9" secondAttribute="bottom" constant="459" id="0XH-gs-PLf"/>
+                            <constraint firstItem="anH-Rz-qoM" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="7ud-yd-Sb5"/>
+                            <constraint firstItem="COE-DS-vrG" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="8qw-9Q-TDT"/>
+                            <constraint firstItem="anH-Rz-qoM" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="DrY-ft-3N9"/>
+                            <constraint firstItem="Nca-me-p0X" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="K8q-Vz-nZm"/>
+                            <constraint firstItem="Nca-me-p0X" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="M5b-bv-WuH"/>
+                            <constraint firstItem="COE-DS-vrG" firstAttribute="bottom" secondItem="6Tk-OE-BBY" secondAttribute="bottom" id="Op6-Yd-EIv"/>
+                            <constraint firstItem="Nca-me-p0X" firstAttribute="top" secondItem="CxX-XH-Ec9" secondAttribute="bottom" id="SP4-om-qFk"/>
+                            <constraint firstItem="COE-DS-vrG" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="Vwr-mr-kkE"/>
+                            <constraint firstItem="COE-DS-vrG" firstAttribute="top" secondItem="anH-Rz-qoM" secondAttribute="bottom" id="fa5-CH-Kv9"/>
+                            <constraint firstItem="CxX-XH-Ec9" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" id="gJB-s7-RrY"/>
+                            <constraint firstItem="CxX-XH-Ec9" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="laS-7A-nY0"/>
+                            <constraint firstItem="CxX-XH-Ec9" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="pl0-pZ-r2n"/>
+                            <constraint firstItem="COE-DS-vrG" firstAttribute="top" secondItem="Nca-me-p0X" secondAttribute="bottom" id="wiq-El-avp"/>
+                            <constraint firstItem="COE-DS-vrG" firstAttribute="top" secondItem="Nca-me-p0X" secondAttribute="bottom" id="x5L-lB-L8N"/>
+                            <constraint firstItem="Nca-me-p0X" firstAttribute="top" secondItem="CxX-XH-Ec9" secondAttribute="bottom" id="zXc-id-PpK"/>
+                        </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
                     <connections>
+                        <outlet property="debugView" destination="anH-Rz-qoM" id="WQg-0s-eAS"/>
                         <outlet property="sceneView" destination="Nca-me-p0X" id="R08-af-q3c"/>
                     </connections>
                 </viewController>
