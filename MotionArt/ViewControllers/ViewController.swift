@@ -25,6 +25,8 @@ class ViewController: UIViewController {
     
     let mlConverter = MLConverter()
     
+    var mfcc:[Float]!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         ARVisualizationManager.shared.delegate = self
@@ -89,6 +91,7 @@ class ViewController: UIViewController {
             vc.option = self.option
             //vc.musicAssetURL = self.musicAssetURL
             vc.ARVizSettings = self.selectedARViz
+            vc.mfcc = self.mfcc
         }
         
         if let vc = segue.destination as? NewVisualizationViewController{
@@ -127,13 +130,15 @@ extension ViewController: MPMediaPickerControllerDelegate{
         if let assetURL = musicItem.value(forKey: MPMediaItemPropertyAssetURL) as? URL
         {
             self.musicAssetURL = assetURL
+            
+//            let sema = DispatchSemaphore(value: 0)
 //            AudioTransformer.shared.computeMFCC(assetURL: assetURL, audioFilePath: nil, completion: { (mfcc) in
 //                print("GOT MFCC DATA!")
-//                print(mfcc)
-//                print("Time to predict")
+//                self.mfcc = mfcc // 26 length
 //                //let prediction = self.mlConverter.predict(data: mfcc)
-//                
+//                sema.signal()
 //            })
+//            sema.wait()
         }
         
         

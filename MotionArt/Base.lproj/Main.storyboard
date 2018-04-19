@@ -216,12 +216,27 @@
                                     <action selector="sliderValueChanged:" destination="gNx-Wv-G2L" eventType="valueChanged" id="GQR-0C-2aX"/>
                                 </connections>
                             </slider>
-                            <slider opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" fixedFrame="YES" restorationIdentifier="boxDimensions" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="1" minValue="0.0" maxValue="7" translatesAutoresizingMaskIntoConstraints="NO" id="ck3-Nl-gxd">
+                            <slider opaque="NO" contentMode="scaleToFill" fixedFrame="YES" restorationIdentifier="boxDimensions" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="1" minValue="0.0" maxValue="7" translatesAutoresizingMaskIntoConstraints="NO" id="ck3-Nl-gxd">
                                 <rect key="frame" x="24" y="457" width="327" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <accessibility key="accessibilityConfiguration" identifier="boxDimensions"/>
                                 <connections>
                                     <action selector="sliderValueChanged:" destination="gNx-Wv-G2L" eventType="valueChanged" id="8U5-FT-Ual"/>
+                                </connections>
+                            </slider>
+                            <textField opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="5hG-gk-2Tg">
+                                <rect key="frame" x="139" y="538" width="97" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <nil key="textColor"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
+                            <slider opaque="NO" contentMode="scaleToFill" fixedFrame="YES" restorationIdentifier="ringRadius" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="1" minValue="1" maxValue="7" translatesAutoresizingMaskIntoConstraints="NO" id="k1i-X6-EIB">
+                                <rect key="frame" x="24" y="576" width="327" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <accessibility key="accessibilityConfiguration" identifier="boxDimensions"/>
+                                <connections>
+                                    <action selector="sliderValueChanged:" destination="gNx-Wv-G2L" eventType="valueChanged" id="38b-zd-E5B"/>
                                 </connections>
                             </slider>
                             <textField opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="knl-Qk-zVW">
@@ -246,6 +261,13 @@
                                     <action selector="sliderValueChanged:" destination="gNx-Wv-G2L" eventType="valueChanged" id="8bE-Ew-lBD"/>
                                 </connections>
                             </slider>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Ring radius" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="R6J-Gg-GyC">
+                                <rect key="frame" x="144" y="509" width="86" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <viewLayoutGuide key="safeArea" id="dqC-XD-hPf"/>
@@ -256,6 +278,8 @@
                         <outlet property="nameField" destination="Lpj-jR-2aY" id="s4z-26-I1v"/>
                         <outlet property="numRingsField" destination="RkP-QX-J4x" id="MHC-SY-wUS"/>
                         <outlet property="numRingsSlider" destination="7mT-J7-aJK" id="qx8-4e-7qv"/>
+                        <outlet property="ringRadiusField" destination="5hG-gk-2Tg" id="Cdp-dx-qOV"/>
+                        <outlet property="ringRadiusSlider" destination="k1i-X6-EIB" id="dUA-ug-25i"/>
                         <outlet property="ringSepSlider" destination="7hX-V4-ZqW" id="693-AE-0w7"/>
                         <outlet property="ringSeparationField" destination="knl-Qk-zVW" id="w4D-Nf-rfT"/>
                     </connections>

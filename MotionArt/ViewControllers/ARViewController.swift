@@ -48,6 +48,8 @@ class ARViewController: UIViewController {
     
     var currentActivity:String!
     
+    var mfcc:[Float]!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupSceneView()
@@ -66,7 +68,7 @@ class ARViewController: UIViewController {
         
         self.createRings(numRings: /*Constants.NUM_RINGS*/ARVizSettings.num_rings, separationDistance: /*Constants.RING_SEPARATION*/ARVizSettings.ring_separation)
         self.beginMotionData()
-        self.beginMotionCategorization()
+        //self.beginMotionCategorization()
     }
     
     override func didReceiveMemoryWarning() {
@@ -207,12 +209,12 @@ class ARViewController: UIViewController {
     // MARK: Create Rings
     func createRings(numRings:Int, separationDistance:Float){
         for i in -numRings/2 ..< numRings/2{
-            let nodes = addRing(y: Float(i)*separationDistance, name:"ring_\(i + numRings/2)")
+            let nodes = addRing(radius: self.ARVizSettings.ring_radius, y: Float(i)*separationDistance, name:"ring_\(i + numRings/2)")
             self.ringNodes.append(nodes)
         }
     }
     
-    func addRing(nodes:[SCNNode]? = nil, radius:Float = 1, x:Float? = nil, y:Float? = nil, z:Float? = nil, name:String? = nil) -> [SCNNode]{
+    func addRing(nodes:[SCNNode]? = nil, radius:Float = 0.5, x:Float? = nil, y:Float? = nil, z:Float? = nil, name:String? = nil) -> [SCNNode]{
         print(name)
         var myNodes = [SCNNode]()
         if let nodes = nodes{
@@ -287,15 +289,17 @@ class ARViewController: UIViewController {
                         let accelColor = UIColor(red: xAccel, green: yAccel, blue: zAccel, alpha: 1)
                         node.geometry?.setColor(color: accelColor)
                     }
-                    if (j == self.ringNodes.count/2)
-                    {
-                        let rot = max(xRot, yRot, zRot)
-                        let xN = Float(cos(Float((i+1)/2) * self.incrementAngle(adjustment: rot))) * Constants.RADIUS //TODO: change radius
-                        let zN = Float(sin(Float((i+1)/2) * self.incrementAngle(adjustment: rot))) * Constants.RADIUS
-                        let yN = Float(0)//Float((i+1))*self.ARVizSettings.ring_separation
-                        
-                        node.position = SCNVector3Make(xN, yN, zN)
-                    }
+                    
+                    // For the middle ring, rotate the nodes
+//                    if (j == self.ringNodes.count/2)
+//                    {
+//                        let rot = max(xRot, yRot, zRot)
+//                        let xN = Float(cos(Float((i+1)/2) * self.incrementAngle(adjustment: rot))) * Constants.RADIUS //TODO: change radius
+//                        let zN = Float(sin(Float((i+1)/2) * self.incrementAngle(adjustment: rot))) * Constants.RADIUS
+//                        let yN = Float(0)//Float((i+1))*self.ARVizSettings.ring_separation
+//                        
+//                        node.position = SCNVector3Make(xN, yN, zN)
+//                    }
                 }
             }
         }
@@ -411,21 +415,29 @@ extension ARViewController:ARSessionDelegate{
                 print("--Within bounds!!!!")
                 //print("Node position: \(nodePosition)")
                 
-                // Move it out a bit
+                // Move the node out a bit if I collide with it
                 let signValues = nodePosition.signValue()
                 
                 // Create collision nodes
-                if let collisionParticleSystem = SCNParticleSystem(named: "Collision", inDirectory: nil){
-                    node.addParticleSystem(collisionParticleSystem)
-                    
-                    let rand = CGFloat(Float(arc4random()) / Float(UINT32_MAX))
-                    let action = SCNAction.move(by: SCNVector3Make(signValues.x * ARVizSettings.increment * Float(rand) , 0, signValues.z * ARVizSettings.increment * Float(rand) ), duration: 1.5 )
-                    action.timingMode = .easeInEaseOut
-                    
-                    node.runAction(action, completionHandler: {
-                        node.physicsBody = SCNPhysicsBody(type: .dynamic, shape: nil)
-                    })
-                }
+                let rand = CGFloat(Float(arc4random()) / Float(UINT32_MAX))
+                let action = SCNAction.move(by: SCNVector3Make(signValues.x * ARVizSettings.increment * Float(rand) , 0, signValues.z * ARVizSettings.increment * Float(rand) ), duration: 1.5 )
+                action.timingMode = .easeInEaseOut
+                
+                node.runAction(action, completionHandler: {
+                    node.physicsBody = SCNPhysicsBody(type: .dynamic, shape: nil)
+                })
+                
+//                if let collisionParticleSystem = SCNParticleSystem(named: "Collision", inDirectory: nil){
+//                    node.addParticleSystem(collisionParticleSystem)
+//
+//                    let rand = CGFloat(Float(arc4random()) / Float(UINT32_MAX))
+//                    let action = SCNAction.move(by: SCNVector3Make(signValues.x * ARVizSettings.increment * Float(rand) , 0, signValues.z * ARVizSettings.increment * Float(rand) ), duration: 1.5 )
+//                    action.timingMode = .easeInEaseOut
+//
+//                    node.runAction(action, completionHandler: {
+//                        node.physicsBody = SCNPhysicsBody(type: .dynamic, shape: nil)
+//                    })
+//                }
                 
             }
         }
@@ -451,11 +463,9 @@ extension ARViewController: AudioTransformerDelegate{
         //let max = magnitudes.max()
         for (index, magnitude) in magnitudes.enumerated()
         {
-            //let middleIndex = ringNodes.count/2
             ringNodes.forEach({ (nodes) in
                 updateNodeScalesWithFFT(index: index, magnitude: magnitude, nodes: nodes)
             })
-            //updateNodeScalesWithFFT(index: index, magnitude: magnitude, nodes: ringNodes[middleIndex])
         }
     }
     
@@ -464,7 +474,7 @@ extension ARViewController: AudioTransformerDelegate{
             print("Index \(index) is greater than # of nodes \(nodes.count)")
             return
         }
-        let m = magnitude.squareRoot()
+        let m = 2*pow(magnitude, 1/3) //magnitude.squareRoot()
         
         let s = SCNVector3Make(m, m, m)
         #if DEBUG

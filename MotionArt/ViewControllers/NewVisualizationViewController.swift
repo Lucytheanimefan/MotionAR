@@ -19,12 +19,16 @@ class NewVisualizationViewController: UIViewController {
     @IBOutlet weak var boxDimensionsField: UITextField!
     @IBOutlet weak var ringSeparationField: UITextField!
     @IBOutlet weak var numRingsField: UITextField!
+    
+    @IBOutlet weak var ringRadiusField: UITextField!
     @IBOutlet weak var selectedMusicLabel: UILabel!
     
     @IBOutlet weak var numRingsSlider: UISlider!
     
     @IBOutlet weak var boxDimensionSlider: UISlider!
     @IBOutlet weak var ringSepSlider: UISlider!
+    
+    @IBOutlet weak var ringRadiusSlider: UISlider!
     var existingCellIndex:Int?
     
     override func viewDidLoad() {
@@ -32,20 +36,22 @@ class NewVisualizationViewController: UIViewController {
         boxDimensionsField.delegate = self
         ringSeparationField.delegate = self
         numRingsField.delegate = self
+        ringRadiusField.delegate = self
         
         nameField.text = visualization.name
         numRingsSlider.setValue(Float(visualization.num_rings), animated: true)
         ringSepSlider.setValue(visualization.ring_separation, animated: true)
         boxDimensionSlider.setValue(visualization.box_dimensions, animated: true)
+        ringRadiusSlider.setValue(visualization.ring_radius, animated: true)
         
         boxDimensionsField.text = visualization.box_dimensions.description
         ringSeparationField.text = visualization.ring_separation.description
         numRingsField.text = visualization.num_rings.description
+        ringRadiusField.text = visualization.ring_radius.description
         
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillShow(sender:)), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillHide(sender:)), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
+//        NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillShow(sender:)), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
+//        
+//        NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillHide(sender:)), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
         
     }
     
@@ -59,7 +65,7 @@ class NewVisualizationViewController: UIViewController {
         print("Move view 150 points upward")
         self.view.frame.origin.y = -150 // Move view 150 points upward
     }
-    
+
     @objc func keyboardWillHide(sender: NSNotification) {
         print("Move view to original position")
         self.view.frame.origin.y = 0 // Move view to original position
@@ -76,7 +82,10 @@ class NewVisualizationViewController: UIViewController {
         if let box = self.boxDimensionsField.text{
             visualization.box_dimensions = Float(box)!
         }
-        if let index = existingCellIndex{
+        if let ringRadius = self.ringRadiusField.text{
+            visualization.ring_radius = Float(ringRadius)!
+        }
+        if let index = existingCellIndex {
             ARVisualizationManager.shared.visualizations[index] = visualization
         }
         else
@@ -100,6 +109,7 @@ class NewVisualizationViewController: UIViewController {
     }
     
     @IBAction func sliderValueChanged(_ sender: UISlider) {
+        print("Slider value changed")
         if (sender.restorationIdentifier == "numRings")
         {
             let rounded = sender.value.rounded();  //Casting to an int will truncate, round down
@@ -112,11 +122,25 @@ class NewVisualizationViewController: UIViewController {
         else if (sender.restorationIdentifier == "boxDimensions"){
             self.boxDimensionsField.text = sender.value.description
         }
+        else if (sender.restorationIdentifier == "ringRadius"){
+            self.ringRadiusField.text
+             = sender.value.description
+        }
     }
     
     
 }
 
+extension UIControl {
+    
+    open override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
+        let inside = super.point(inside: point, with: event)
+        if inside != isHighlighted && event?.type == .touches {
+            isHighlighted = inside
+        }
+        return inside
+    }
+}
 
 extension NewVisualizationViewController: UITextFieldDelegate{
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
