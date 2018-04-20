@@ -51,10 +51,6 @@ class ARViewController: UIViewController {
         set{
             self._currentActivity = newValue
             appendToDebugView(string: self.timestamp + ": " + newValue + "\n")
-//            DispatchQueue.main.async {
-//                self.debugView.text.append(self.timestamp + ": " + newValue + "\n") //newValue
-//                self.debugView.simple_scrollToBottom()
-//            }
         }
         get{
             return self._currentActivity
@@ -302,7 +298,7 @@ class ARViewController: UIViewController {
     
     // MARK: Motion
     func beginMotionData(){
-        var oldIndex:Int = -1
+        //var oldIndex:Int = -1
         self.motionManager.startDeviceMotionUpdates(to: OperationQueue.current!) { (deviceMotion, error) in
             guard error == nil else{
                 DispatchQueue.main.async {
@@ -392,17 +388,7 @@ class ARViewController: UIViewController {
                 self.currentActivity = "Stationary"
                 
                 // Make it a dome/sphere thing!
-                self.changeRingRadii(radii: [])
-                //                for (i, ring) in self.ringNodes.enumerated(){
-                //                    for (j, node) in ring.enumerated(){
-                //                        if (i == 0 || i == self.ringNodes.count - 1){
-                //                            let xN = Float(cos(Float((j+1)/2) * self.incrementAngle())) * Constants.RADIUS/2 //TODO: change radius
-                //                            let zN = Float(sin(Float((j+1)/2) * self.incrementAngle())) * Constants.RADIUS/2
-                //                            let yN = Float(i) * self.ARVizSettings.ring_separation
-                //                            node.position = SCNVector3Make(xN, yN, zN)
-                //                        }
-                //                    }
-                //                }
+                //self.changeRingRadii(radii: [])
             }
             else if (activity.running){
                 guard self.currentActivity != "running" else {
