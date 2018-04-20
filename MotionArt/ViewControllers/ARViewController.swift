@@ -50,10 +50,11 @@ class ARViewController: UIViewController {
     var currentActivity:String{
         set{
             self._currentActivity = newValue
-            DispatchQueue.main.async {
-                self.debugView.text.append(self.timestamp + ": " + newValue + "\n") //newValue
-                self.debugView.simple_scrollToBottom()
-            }
+            appendToDebugView(string: self.timestamp + ": " + newValue + "\n")
+//            DispatchQueue.main.async {
+//                self.debugView.text.append(self.timestamp + ": " + newValue + "\n") //newValue
+//                self.debugView.simple_scrollToBottom()
+//            }
         }
         get{
             return self._currentActivity
@@ -108,7 +109,11 @@ class ARViewController: UIViewController {
         return (4*Float.pi + adjustment) / Float(ARVizSettings.num_nodes)
     }
     
+    
     @IBAction func cancel(_ sender: UIBarButtonItem) {
+        self.motionManager.stopDeviceMotionUpdates()
+        cleanScene()
+        self.ringNodes = [[SCNNode]]()
         self.dismiss(animated: true) {
             if (self.ARVizSettings.musicAssetURL != nil){
                 //self.musicAssetURL = nil
@@ -122,6 +127,13 @@ class ARViewController: UIViewController {
         
         debugView.frame = CGRect(x: frame.origin.x, y: frame.origin.y, width: frame.width, height: (frame.height < 120) ? 120 : 0)
         
+    }
+    
+    func appendToDebugView(string:String){
+        DispatchQueue.main.async {
+            self.debugView.text.append(string)
+            self.debugView.simple_scrollToBottom()
+        }
     }
     
     
@@ -248,7 +260,7 @@ class ARViewController: UIViewController {
     }
     
     func addRing(nodes:[SCNNode]? = nil, radius:Float = 0.5, x:Float? = nil, y:Float? = nil, z:Float? = nil, name:String? = nil) -> [SCNNode]{
-        print(name)
+        //print(name)
         var myNodes = [SCNNode]()
         if let nodes = nodes{
             myNodes = nodes
@@ -293,6 +305,9 @@ class ARViewController: UIViewController {
         var oldIndex:Int = -1
         self.motionManager.startDeviceMotionUpdates(to: OperationQueue.current!) { (deviceMotion, error) in
             guard error == nil else{
+                DispatchQueue.main.async {
+                    self.debugView.text.append(error.debugDescription + "\n")
+                }
                 print(error.debugDescription)
                 return
             }
@@ -341,7 +356,7 @@ class ARViewController: UIViewController {
     func changeRingRadii(radii:[Float]){
         for (i, ring) in self.ringNodes.enumerated(){
             for (j, node) in ring.enumerated(){
-                let radius:Float = (radii.count < i) ? Constants.RADIUS : radii[i]
+                let radius:Float = (radii.count <= i) ? Constants.RADIUS : radii[i]
                 let xN = Float(cos(Float((j+1)/2) * self.incrementAngle())) * radius //TODO: change radius
                 let zN = Float(sin(Float((j+1)/2) * self.incrementAngle())) * radius
                 let yN = Float(i) * self.ARVizSettings.ring_separation //Float((i+1))*self.ARVizSettings.ring_separation
@@ -423,9 +438,9 @@ class ARViewController: UIViewController {
             abs(position1.z - position2.z) < ARVizSettings.bounds)
     }
     
-    func cleanScene() {
+    func cleanScene(removeAll:Bool = false) {
         for (i, node) in self.nodes.enumerated() {
-            if node.presentation.position.y < -1*(Float(ARVizSettings.num_rings/2) * ARVizSettings.ring_separation) {
+            if removeAll || (node.presentation.position.y < -1*(Float(ARVizSettings.num_rings/2) * ARVizSettings.ring_separation)) {
                 print("Remove a node")
                 node.removeFromParentNode()
                 self.nodes.remove(at: i)
