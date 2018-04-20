@@ -129,10 +129,10 @@ class ARViewController: UIViewController {
     func setupSceneView(){
         self.sceneView.scene = SCNScene()
         self.sceneView.delegate = self
-//        #if DEBUG
-            self.sceneView.showsStatistics = true
-//            self.sceneView.debugOptions = ARSCNDebugOptions.showWorldOrigin
-//        #endif
+        //        #if DEBUG
+        self.sceneView.showsStatistics = true
+        //            self.sceneView.debugOptions = ARSCNDebugOptions.showWorldOrigin
+        //        #endif
         self.sceneView.debugOptions.insert(.showWireframe)
         self.sceneView.scene.physicsWorld.contactDelegate = self
         
@@ -152,12 +152,12 @@ class ARViewController: UIViewController {
             print("Music URL: \(url)")
             audioTransformer.begin(file: url)
         }
-        startRecording()
+        //startRecording()
     }
     
     
     @IBAction func stopRecording(_ sender: UIBarButtonItem) {
-        stopRecording()
+        //stopRecording()
     }
     
     func startRecording(){
@@ -228,7 +228,7 @@ class ARViewController: UIViewController {
         if let name = name{
             boxNode.name = name
         }
-
+        
         return boxNode
     }
     
@@ -306,7 +306,7 @@ class ARViewController: UIViewController {
             
             #if DEBUG
             //print("Rotation: \(xRot), \(yRot), \(zRot)")
-                //print("Acceleration: \(xAccel),\(yAccel),\(zAccel)")
+            //print("Acceleration: \(xAccel),\(yAccel),\(zAccel)")
             #endif
             
             let (xGravity, yGravity, zGravity) = deviceMotion.absGravity()
@@ -324,16 +324,28 @@ class ARViewController: UIViewController {
                     }
                     
                     // For the middle ring, rotate the nodes
-//                    if (j == self.ringNodes.count/2)
-//                    {
-//                        let rot = max(xRot, yRot, zRot)
-//                        let xN = Float(cos(Float((i+1)/2) * self.incrementAngle(adjustment: rot))) * Constants.RADIUS //TODO: change radius
-//                        let zN = Float(sin(Float((i+1)/2) * self.incrementAngle(adjustment: rot))) * Constants.RADIUS
-//                        let yN = Float(0)//Float((i+1))*self.ARVizSettings.ring_separation
-//                        
-//                        node.position = SCNVector3Make(xN, yN, zN)
-//                    }
+                    //                    if (j == self.ringNodes.count/2)
+                    //                    {
+                    //                        let rot = max(xRot, yRot, zRot)
+                    //                        let xN = Float(cos(Float((i+1)/2) * self.incrementAngle(adjustment: rot))) * Constants.RADIUS //TODO: change radius
+                    //                        let zN = Float(sin(Float((i+1)/2) * self.incrementAngle(adjustment: rot))) * Constants.RADIUS
+                    //                        let yN = Float(0)//Float((i+1))*self.ARVizSettings.ring_separation
+                    //
+                    //                        node.position = SCNVector3Make(xN, yN, zN)
+                    //                    }
                 }
+            }
+        }
+    }
+    
+    func changeRingRadii(radii:[Float]){
+        for (i, ring) in self.ringNodes.enumerated(){
+            for (j, node) in ring.enumerated(){
+                let radius:Float = (radii.count < i) ? Constants.RADIUS : radii[i]
+                let xN = Float(cos(Float((j+1)/2) * self.incrementAngle())) * radius //TODO: change radius
+                let zN = Float(sin(Float((j+1)/2) * self.incrementAngle())) * radius
+                let yN = Float(i) * self.ARVizSettings.ring_separation //Float((i+1))*self.ARVizSettings.ring_separation
+                node.position = SCNVector3Make(xN, yN, zN)
             }
         }
     }
@@ -350,36 +362,32 @@ class ARViewController: UIViewController {
                 self.currentActivity = "Walking"
                 
                 // Make it a dome/sphere thing!
-                for (i, ring) in self.ringNodes.enumerated(){
-                    for (j, node) in ring.enumerated(){
-                        if (i == 0 || i == self.ringNodes.count - 1){
-                            let xN = Float(cos(Float((j+1)/2) * self.incrementAngle())) * Constants.RADIUS //TODO: change radius
-                            let zN = Float(sin(Float((j+1)/2) * self.incrementAngle())) * Constants.RADIUS
-                            let yN = Float(i) * self.ARVizSettings.ring_separation//Float((i+1))*self.ARVizSettings.ring_separation
-                            node.position = SCNVector3Make(xN, yN, zN)
-                        }
-                    }
+                let radiusFactor = Constants.RADIUS/Float(self.ringNodes.count)
+                var radii = [Float]()
+                let midpoint = self.ringNodes.count/2
+                for i in 0..<self.ringNodes.count{
+                    radii.append(Float(abs(midpoint - i)) * radiusFactor)
                 }
+                self.changeRingRadii(radii: radii)
             }
             else if (activity.stationary){
                 guard self.currentActivity != "Stationary" else {
                     return
                 }
-                print("Stationary!")
                 self.currentActivity = "Stationary"
                 
                 // Make it a dome/sphere thing!
-                
-                for (i, ring) in self.ringNodes.enumerated(){
-                    for (j, node) in ring.enumerated(){
-                        if (i == 0 || i == self.ringNodes.count - 1){
-                            let xN = Float(cos(Float((j+1)/2) * self.incrementAngle())) * Constants.RADIUS/2 //TODO: change radius
-                            let zN = Float(sin(Float((j+1)/2) * self.incrementAngle())) * Constants.RADIUS/2
-                            let yN = Float(i) * self.ARVizSettings.ring_separation
-                            node.position = SCNVector3Make(xN, yN, zN)
-                        }
-                    }
-                }
+                self.changeRingRadii(radii: [])
+                //                for (i, ring) in self.ringNodes.enumerated(){
+                //                    for (j, node) in ring.enumerated(){
+                //                        if (i == 0 || i == self.ringNodes.count - 1){
+                //                            let xN = Float(cos(Float((j+1)/2) * self.incrementAngle())) * Constants.RADIUS/2 //TODO: change radius
+                //                            let zN = Float(sin(Float((j+1)/2) * self.incrementAngle())) * Constants.RADIUS/2
+                //                            let yN = Float(i) * self.ARVizSettings.ring_separation
+                //                            node.position = SCNVector3Make(xN, yN, zN)
+                //                        }
+                //                    }
+                //                }
             }
             else if (activity.running){
                 guard self.currentActivity != "running" else {
@@ -452,29 +460,28 @@ extension ARViewController:ARSessionDelegate{
     }
     
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
+        
+        guard ARVizSettings.gamify else {
+            return
+        }
+        
         self.currentPosition = frame.camera.transform.position()
         //print("Current position: \(currentPosition)")
         
-        for (i, node) in self.nodes.enumerated(){
+        for (_, node) in self.nodes.enumerated(){
             let nodePosition = node.position
             
             // Collision detected
             if self.withinBounds(position1: nodePosition, position2: currentPosition){
                 print("--Within bounds!!!!")
-                //print("Node position: \(nodePosition)")
                 
                 // Move the node out a bit if I collide with it
                 let signValues = nodePosition.signValue()
-
-                if (ARVizSettings.gamify){
-                    if let collisionParticleSystem = SCNParticleSystem(named: "Collision", inDirectory: nil){
-                        node.addParticleSystem(collisionParticleSystem)
-                        pushNodeOutward(node: node, signValues: signValues, physics: true)
-                    }
-                }
-                else
-                {
-                    pushNodeOutward(node: node, signValues: signValues, physics: false)
+                
+                
+                if let collisionParticleSystem = SCNParticleSystem(named: "Collision", inDirectory: nil){
+                    node.addParticleSystem(collisionParticleSystem)
+                    pushNodeOutward(node: node, signValues: signValues, physics: true)
                 }
             }
         }
@@ -515,7 +522,7 @@ extension ARViewController: AudioTransformerDelegate{
         
         let s = SCNVector3Make(m, m, m)
         #if DEBUG
-            //print("Node: \(index), Scale: \(s.description())")
+        //print("Node: \(index), Scale: \(s.description())")
         #endif
         nodes[index].scale = s
     }
