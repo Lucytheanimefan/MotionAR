@@ -225,7 +225,9 @@ class ARViewController: UIViewController {
     
     func createBox(name:String? = nil)->SCNNode{
         let box = SCNBox(width: CGFloat(ARVizSettings.box_dimensions), height: CGFloat(ARVizSettings.box_dimensions), length: CGFloat(ARVizSettings.box_dimensions), chamferRadius: 0)
+        print("Anime setting? \(ARVizSettings.anime)")
         if (ARVizSettings.anime){
+            print("SET ANIME:")
             box.setImage(image: #imageLiteral(resourceName: "penguinCucumber"))
         }
         
@@ -329,7 +331,7 @@ class ARViewController: UIViewController {
                         let minDimension = min(geometry.height, geometry.width, geometry.length)/2
                         geometry.chamferRadius = CGFloat(yGravity)*minDimension
                     }
-                    if (self.option == "motion"){
+                    if (self.option == "motion" && !self.ARVizSettings.anime){
                         let accelColor = UIColor(red: xAccel, green: yAccel, blue: zAccel, alpha: 1)
                         node.geometry?.setColor(color: accelColor)
                     }

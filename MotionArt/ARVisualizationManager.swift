@@ -70,6 +70,7 @@ class ARVisualizationManager: NSObject {
                 viz.num_nodes = dict["num_nodes"] as! Int
                 viz.num_rings = dict["num_rings"] as! Int
                 viz.ring_separation = dict["ring_separation"] as! Float
+                viz.anime = (dict["anime"] as? Bool) ?? false
                 
                 self.addSetting(setting: viz)
             })
