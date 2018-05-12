@@ -30,7 +30,9 @@ class NewVisualizationViewController: UIViewController {
     
     @IBOutlet weak var ringRadiusSlider: UISlider!
     
+    @IBOutlet weak var animeSwitch: UISwitch!
     @IBOutlet weak var gamifySwitch: UISwitch!
+    
     var existingCellIndex:Int?
     
     override func viewDidLoad() {
@@ -112,6 +114,10 @@ class NewVisualizationViewController: UIViewController {
     
     @IBAction func switchAction(_ sender: UISwitch) {
         visualization.gamify = sender.isOn
+    }
+    
+    @IBAction func animeSwitchAction(_ sender: UISwitch) {
+        visualization.anime = sender.isOn
     }
     
     @IBAction func sliderValueChanged(_ sender: UISlider) {

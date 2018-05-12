@@ -33,7 +33,7 @@ class AudioTransformer: NSObject {
     
     var addedNode:Bool = false
     
-    var aubiomfcc = new_aubio_mfcc(uint_t(Constants.NUM_NODES), 20, 13, 16000)
+    //var aubiomfcc = new_aubio_mfcc(uint_t(Constants.NUM_NODES), 20, 13, 16000)
     
     func begin(file:URL){
         os_log("%@: Begin", self.description)

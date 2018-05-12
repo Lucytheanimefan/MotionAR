@@ -10,7 +10,7 @@ import Foundation
 
 struct Constants{
     // Collision bounds
-    static let BOUNDS:Float = 0.1
+    static let BOUNDS:Float = 0.2
     
     // For collision - how much the node moves back on collision
     static let INCREMENT:Float = 0.07

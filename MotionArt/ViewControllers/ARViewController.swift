@@ -87,7 +87,7 @@ class ARViewController: UIViewController {
         self.startSession()
         self.createLight()
         
-        self.createRings(numRings: /*Constants.NUM_RINGS*/ARVizSettings.num_rings, separationDistance: /*Constants.RING_SEPARATION*/ARVizSettings.ring_separation)
+        self.createRings(numRings: ARVizSettings.num_rings, separationDistance: ARVizSettings.ring_separation)
         self.beginMotionData()
         self.beginMotionCategorization()
     }
@@ -225,7 +225,7 @@ class ARViewController: UIViewController {
     
     func createBox(name:String? = nil)->SCNNode{
         let box = SCNBox(width: CGFloat(ARVizSettings.box_dimensions), height: CGFloat(ARVizSettings.box_dimensions), length: CGFloat(ARVizSettings.box_dimensions), chamferRadius: 0)
-        if (ARVizSettings.name.lowercased() == "anime"){
+        if (ARVizSettings.anime){
             box.setImage(image: #imageLiteral(resourceName: "penguinCucumber"))
         }
         
